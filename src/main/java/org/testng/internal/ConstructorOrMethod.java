@@ -13,13 +13,19 @@ public class ConstructorOrMethod {
   private Method m_method;
   private Constructor m_constructor;
   private boolean m_enabled = true;
+  private int hashCode;
+  private String cString, mString;
 
   public ConstructorOrMethod(Method m) {
     m_method = m;
+    hashCode = m.hashCode();
+    mString = m.toString();
   }
 
   public ConstructorOrMethod(Constructor c) {
     m_constructor = c;
+    hashCode = c.hashCode();
+    cString = c.toString();
   }
 
   public Class<?> getDeclaringClass() {
@@ -46,8 +52,9 @@ public class ConstructorOrMethod {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((getConstructor() == null) ? 0 : getConstructor().hashCode());
-    result = prime * result + ((getMethod() == null) ? 0 : getMethod().hashCode());
+//    result = prime * result + ((getConstructor() == null) ? 0 : getConstructor().hashCode());
+//    result = prime * result + ((getMethod() == null) ? 0 : getMethod().hashCode());
+    result = prime * result + hashCode;
     return result;
   }
 
@@ -63,12 +70,12 @@ public class ConstructorOrMethod {
     if (getConstructor() == null) {
       if (other.getConstructor() != null)
         return false;
-    } else if (!getConstructor().equals(other.getConstructor()))
+    } else if (!cString.equals(other.cString))
       return false;
     if (getMethod() == null) {
       if (other.getMethod() != null)
         return false;
-    } else if (!getMethod().equals(other.getMethod()))
+    } else if (!mString.equals(other.mString))
       return false;
     return true;
   }

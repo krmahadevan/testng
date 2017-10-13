@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,7 @@ public class Graph<T> {
   }
 
   public Set<T> getPredecessors(T node) {
-    return findNode(node).getPredecessors().keySet();
+    return findNode(node).getPredecessors();
   }
 
   public boolean isIndependent(T object) {
@@ -263,7 +264,8 @@ public class Graph<T> {
   //
   public static class Node<T>  {
     private T m_object = null;
-    private Map<T, T> m_predecessors = Maps.newHashMap();
+//    private Map<T, T> m_predecessors = Maps.newHashMap();
+    private Set<T>m_predecessors = Sets.newHashSet();
 
     public Node(T tm) {
       m_object = tm;
@@ -281,7 +283,7 @@ public class Graph<T> {
     @Override
     public Node<T> clone() {
       Node<T> result = new Node<>(m_object);
-      for (T pred : m_predecessors.values()) {
+      for (T pred : m_predecessors) {
         result.addPredecessor(pred);
       }
       return result;
@@ -291,7 +293,7 @@ public class Graph<T> {
       return m_object;
     }
 
-    public Map<T, T> getPredecessors() {
+    public Set<T> getPredecessors() {
       return m_predecessors;
     }
 
@@ -300,17 +302,14 @@ public class Graph<T> {
      * @return true if this predecessor was found and removed
      */
     public boolean removePredecessor(T o) {
-      boolean result = false;
-
-      T pred = m_predecessors.get(o);
-      if (null != pred) {
-        result = null != m_predecessors.remove(o);
-        if (result) {
-          ppp("  REMOVED PRED " + o + " FROM NODE " + m_object);
-        }
-        else {
-          ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
-        }
+      if (m_predecessors.isEmpty()) {
+        return false;
+      }
+      boolean result = m_predecessors.remove(o);
+      if (result) {
+        ppp("  REMOVED PRED " + o + " FROM NODE " + m_object);
+      } else {
+        ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
       }
 
       return result;
@@ -320,7 +319,7 @@ public class Graph<T> {
     public String toString() {
       StringBuilder sb = new StringBuilder("[Node:" + m_object);
       sb.append("  pred:");
-      for (T o : m_predecessors.values()) {
+      for (T o : m_predecessors) {
         sb.append(" ").append(o);
       }
       sb.append("]");
@@ -330,7 +329,7 @@ public class Graph<T> {
 
     public void addPredecessor(T tm) {
       ppp("  ADDING PREDECESSOR FOR " + m_object + " ==> " + tm);
-      m_predecessors.put(tm, tm);
+      m_predecessors.add(tm);
     }
 
     public boolean hasPredecessors() {
@@ -338,7 +337,7 @@ public class Graph<T> {
     }
 
     public boolean hasPredecessor(T m) {
-      return m_predecessors.containsKey(m);
+      return m_predecessors.contains(m);
     }
 
   }
