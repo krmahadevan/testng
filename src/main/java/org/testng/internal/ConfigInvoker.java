@@ -274,9 +274,18 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups() ,
-            arguments.getTestClass(),
-            arguments.getInstance()) && !alwaysRun) {
+        boolean ignoreUpstreamFailures = tm.isAfterMethodConfiguration() ||
+            tm.isAfterClassConfiguration() ||
+            tm.isAfterTestConfiguration() ||
+            tm.isAfterSuiteConfiguration() || tm.isAfterGroupsConfiguration();
+        boolean hasUpstreamFailure = hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups() ,
+            arguments.getTestClass(), arguments.getInstance());
+        boolean condition = hasUpstreamFailure && !m_continueOnFailedConfiguration;
+
+        if (ignoreUpstreamFailures) {
+          condition = !alwaysRun && hasUpstreamFailure;
+        }
+        if (condition) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod =
               new InvokedMethod(System.currentTimeMillis(), testResult);

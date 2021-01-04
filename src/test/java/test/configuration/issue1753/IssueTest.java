@@ -23,9 +23,6 @@ public class IssueTest extends SimpleBaseTest {
   private static Map<String, String> expected() {
     Map<String, String> expected = Maps.newHashMap();
     expected.put(
-        ChildClassSample.class.getSimpleName() + "-childClassBeforeMethod",
-        ChildClassSample.class.getName() + ".childClassBeforeMethod()");
-    expected.put(
         ChildClassSample.class.getSimpleName() + "-parentClassBeforeMethod",
         ChildClassSample.class.getName() + ".parentClassBeforeMethod()");
     return expected;

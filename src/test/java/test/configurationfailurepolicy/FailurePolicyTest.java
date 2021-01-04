@@ -76,6 +76,10 @@ public class FailurePolicyTest {
     verify(tla, configurationFailures, configurationSkips, skippedTests);
   }
 
+  public static void main(String[] args) {
+    new FailurePolicyTest().confFailureTestInvolvingGroups();
+  }
+
   @Test
   public void confFailureTestInvolvingGroups() {
     Class[] classesUnderTest = new Class[]{
