@@ -33,6 +33,7 @@ java {
 dependencies {
     // Note: it is enough to mention key projects here, and testng transitives
     // would be selected automatically
+    shadedDependencyElements(projects.testngShaded)
     shadedDependencyElements(projects.testngAsserts)
     shadedDependencyElements(projects.testngCore)
 }
@@ -89,6 +90,7 @@ tasks.mergedJar {
                 org.testng.reporters
                 org.testng.reporters.jq
                 org.testng.reporters.util
+                org.testng.shaded
                 org.testng.thread
                 org.testng.util
                 org.testng.xml

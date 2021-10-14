@@ -28,6 +28,7 @@ include(":testng-core-api")
 include(":testng-reflection-utils")
 include(":testng-runner-api")
 include(":testng-runner-junit4")
+include(":testng-shaded")
 include(":testng-test-kit")
 include(":testng-test-osgi")
 
