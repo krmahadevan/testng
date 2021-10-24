@@ -72,7 +72,7 @@ val mergedJars by configurations.creating {
 }
 
 val shadedDependencyJavadocClasspath by configurations.creating {
-    description = "Resolves a runtime classpath of the aggregated -all dependenices"
+    description = "Resolves a runtime classpath of the aggregated -all dependencies"
     isCanBeConsumed = false
     isCanBeResolved = true
     isVisible = false

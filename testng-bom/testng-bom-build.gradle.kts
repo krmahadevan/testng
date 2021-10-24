@@ -8,7 +8,7 @@ dependencies {
     constraints {
         api(projects.testngAnt)
         api(projects.testngApi)
-        api(projects.testngShaded)
+//        api(projects.testngShaded)
         api(projects.testngAsserts)
         api(projects.testngCollections)
         api(projects.testngCoreApi)

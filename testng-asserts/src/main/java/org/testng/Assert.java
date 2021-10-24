@@ -5,6 +5,7 @@ import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
+import static org.testng.shaded.org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -17,6 +18,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.testng.collections.Lists;
+import org.testng.shaded.org.assertj.core.api.Assertions;
+import org.testng.shaded.org.assertj.core.api.Condition;
+import org.testng.shaded.org.assertj.core.api.Fail;
+import org.testng.shaded.org.assertj.core.data.Offset;
 
 /**
  * Assertion tool class. Presents assertion methods with a more natural parameter order. The order
@@ -52,9 +57,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertTrue(boolean condition, String message) {
-    if (!condition) {
-      failNotEquals(condition, Boolean.TRUE, message);
-    }
+    assertThat(condition)
+        .withFailMessage(message)
+        .isTrue();
   }
 
   /**
@@ -63,7 +68,7 @@ public class Assert {
    * @param condition the condition to evaluate
    */
   public static void assertTrue(boolean condition) {
-    assertTrue(condition, null);
+    assertThat(condition).isTrue();
   }
 
   /**
@@ -74,9 +79,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertFalse(boolean condition, String message) {
-    if (condition) {
-      failNotEquals(condition, Boolean.FALSE, message); // TESTNG-81
-    }
+    assertThat(condition)
+        .withFailMessage(message)
+        .isFalse();
   }
 
   /**
@@ -85,7 +90,7 @@ public class Assert {
    * @param condition the condition to evaluate
    */
   public static void assertFalse(boolean condition) {
-    assertFalse(condition, null);
+    assertThat(condition).isFalse();
   }
 
   /**
@@ -95,10 +100,7 @@ public class Assert {
    * @param realCause the original exception
    */
   public static void fail(String message, Throwable realCause) {
-    AssertionError ae = new AssertionError(message);
-    ae.initCause(realCause);
-
-    throw ae;
+    Fail.fail(message, realCause);
   }
 
   /**
@@ -107,12 +109,12 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void fail(String message) {
-    throw new AssertionError(message);
+    Fail.fail(message);
   }
 
   /** Fails a test with no message. */
   public static void fail() {
-    fail(null);
+    Fail.fail("");
   }
 
   /**
@@ -124,11 +126,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(Object actual, Object expected, String message) {
-    if (expected != null && expected.getClass().isArray()) {
-      assertArrayEquals(actual, expected, message);
-      return;
-    }
-    assertEqualsImpl(actual, expected, message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   private static boolean areEqual(Object actual, Object expected) {
@@ -233,7 +233,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(byte[] actual, byte[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -245,21 +245,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(byte[] actual, byte[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Byte.toString(expected[i]),
-                Byte.toString(actual[i]),
-                message));
-      }
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -270,7 +258,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(short[] actual, short[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -282,21 +270,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(short[] actual, short[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Short.toString(expected[i]),
-                Short.toString(actual[i]),
-                message));
-      }
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -307,7 +283,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(int[] actual, int[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -319,21 +295,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(int[] actual, int[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Integer.toString(expected[i]),
-                Integer.toString(actual[i]),
-                message));
-      }
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -344,7 +308,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(boolean[] actual, boolean[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -356,21 +320,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(boolean[] actual, boolean[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Boolean.toString(expected[i]),
-                Boolean.toString(actual[i]),
-                message));
-      }
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -381,7 +333,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(char[] actual, char[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -393,21 +345,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(char[] actual, char[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Character.toString(expected[i]),
-                Character.toString(actual[i]),
-                message));
-      }
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -418,7 +358,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(float[] actual, float[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -430,21 +370,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(float[] actual, float[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(
-          actual[i],
-          expected[i],
-          String.format(
-              ARRAY_MISMATCH_TEMPLATE,
-              i,
-              Float.toString(expected[i]),
-              Float.toString(actual[i]),
-              message));
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -456,7 +384,9 @@ public class Assert {
    * @param delta the absolute tolerable difference between the actual and expected values
    */
   public static void assertEquals(float[] actual, float[] expected, float delta) {
-    assertEquals(actual, expected, delta, "");
+    assertThat(actual)
+        .usingComparatorWithPrecision(delta)
+        .isEqualTo(expected);
   }
 
   /**
@@ -469,22 +399,10 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(float[] actual, float[] expected, float delta, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(
-          actual[i],
-          expected[i],
-          delta,
-          String.format(
-              ARRAY_MISMATCH_TEMPLATE,
-              i,
-              Float.toString(expected[i]),
-              Float.toString(actual[i]),
-              message));
-    }
+    assertThat(actual)
+        .usingComparatorWithPrecision(delta)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -495,7 +413,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(double[] actual, double[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -507,21 +425,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(double[] actual, double[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(
-          actual[i],
-          expected[i],
-          String.format(
-              ARRAY_MISMATCH_TEMPLATE,
-              i,
-              Double.toString(expected[i]),
-              Double.toString(actual[i]),
-              message));
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -533,7 +439,9 @@ public class Assert {
    * @param delta the absolute tolerable difference between the actual and expected values
    */
   public static void assertEquals(double[] actual, double[] expected, double delta) {
-    assertEquals(actual, expected, delta, "");
+    assertThat(actual)
+        .usingComparatorWithPrecision(delta)
+        .isEqualTo(expected);
   }
 
   /**
@@ -547,22 +455,10 @@ public class Assert {
    */
   public static void assertEquals(
       double[] actual, double[] expected, double delta, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(
-          actual[i],
-          expected[i],
-          delta,
-          String.format(
-              ARRAY_MISMATCH_TEMPLATE,
-              i,
-              Double.toString(expected[i]),
-              Double.toString(actual[i]),
-              message));
-    }
+    assertThat(actual)
+        .usingComparatorWithPrecision(delta)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -573,7 +469,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(long[] actual, long[] expected) {
-    assertEquals(actual, expected, "");
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -585,21 +481,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(long[] actual, long[] expected, String message) {
-    if (checkRefEqualityAndLength(actual, expected, message)) {
-      return;
-    }
-
-    for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Long.toString(expected[i]),
-                Long.toString(actual[i]),
-                message));
-      }
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -640,7 +524,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(Object actual, Object expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -652,7 +536,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(String actual, String expected, String message) {
-    assertEquals((Object) actual, (Object) expected, message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -662,7 +548,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(String actual, String expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   private static boolean areEqual(double actual, double expected, double delta) {
@@ -693,9 +579,10 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(double actual, double expected, double delta, String message) {
-    if (!areEqual(actual, expected, delta)) {
-      failNotEquals(actual, expected, message);
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isCloseTo(expected, Offset.offset(delta))
+        .isEqualTo(expected);
   }
 
   /**
@@ -707,7 +594,9 @@ public class Assert {
    * @param delta the absolute tolerable difference between the actual and expected values
    */
   public static void assertEquals(double actual, double expected, double delta) {
-    assertEquals(actual, expected, delta, null);
+    assertThat(actual)
+        .isCloseTo(expected, Offset.offset(delta))
+        .isEqualTo(expected);
   }
 
   /**
@@ -719,13 +608,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(double actual, double expected, String message) {
-    if (Double.isNaN(expected)) {
-      if (!Double.isNaN(actual)) {
-        failNotEquals(actual, expected, message);
-      }
-    } else if (actual != expected) {
-      failNotEquals(actual, expected, message);
-    }
+    assertThat(expected)
+        .withFailMessage(message)
+        .isEqualTo(actual);
   }
 
   /**
@@ -759,7 +644,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(double actual, double expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -810,9 +695,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(float actual, float expected, float delta, String message) {
-    if (!areEqual(actual, expected, delta)) {
-      failNotEquals(actual, expected, message);
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isCloseTo(expected, Offset.offset(delta));
   }
 
   /**
@@ -824,7 +709,8 @@ public class Assert {
    * @param delta the absolute tolerable difference between the actual and expected values
    */
   public static void assertEquals(float actual, float expected, float delta) {
-    assertEquals(actual, expected, delta, null);
+    assertThat(actual)
+        .isCloseTo(expected, Offset.offset(delta));
   }
 
   /**
@@ -836,13 +722,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(float actual, float expected, String message) {
-    if (Float.isNaN(expected)) {
-      if (!Float.isNaN(actual)) {
-        failNotEquals(actual, expected, message);
-      }
-    } else if (actual != expected) {
-      failNotEquals(actual, expected, message);
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -876,7 +758,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(float actual, float expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -908,7 +790,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(long actual, long expected, String message) {
-    assertEquals(Long.valueOf(actual), Long.valueOf(expected), message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -942,7 +826,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(long actual, long expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
   /**
    * Asserts that two longs are equal. If they are not, an AssertionError is thrown.
@@ -973,7 +857,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(boolean actual, boolean expected, String message) {
-    assertEquals(Boolean.valueOf(actual), Boolean.valueOf(expected), message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -1007,7 +893,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(boolean actual, boolean expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -1039,7 +925,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(byte actual, byte expected, String message) {
-    assertEquals(Byte.valueOf(actual), Byte.valueOf(expected), message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -1073,7 +961,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(byte actual, byte expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -1105,7 +993,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(char actual, char expected, String message) {
-    assertEquals(Character.valueOf(actual), Character.valueOf(expected), message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -1139,7 +1029,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(char actual, char expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -1171,7 +1061,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(short actual, short expected, String message) {
-    assertEquals(Short.valueOf(actual), Short.valueOf(expected), message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -1205,7 +1097,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(short actual, short expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -1237,7 +1129,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(int actual, int expected, String message) {
-    assertEquals(Integer.valueOf(actual), Integer.valueOf(expected), message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isEqualTo(expected);
   }
 
   /**
@@ -1271,7 +1165,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(int actual, int expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**
@@ -1300,7 +1194,7 @@ public class Assert {
    * @param object the assertion object
    */
   public static void assertNotNull(Object object) {
-    assertNotNull(object, null);
+    assertThat(object).isNotNull();
   }
 
   /**
@@ -1311,13 +1205,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNotNull(Object object, String message) {
-    if (object == null) {
-      String formatted = "";
-      if (message != null) {
-        formatted = message + " ";
-      }
-      fail(formatted + "expected object to not be null");
-    }
+    assertThat(object)
+        .withFailMessage(message)
+        .isNotNull();
   }
 
   /**
@@ -1327,7 +1217,7 @@ public class Assert {
    * @param object the assertion object
    */
   public static void assertNull(Object object) {
-    assertNull(object, null);
+    assertThat(object).isNull();
   }
 
   /**
@@ -1338,9 +1228,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNull(Object object, String message) {
-    if (object != null) {
-      failNotSame(object, null, message);
-    }
+    assertThat(object)
+        .withFailMessage(message)
+        .isNull();
   }
 
   /**
@@ -1352,10 +1242,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      return;
-    }
-    failNotSame(actual, expected, message);
+    assertThat(actual)
+        .withFailMessage(message)
+        .isSameAs(expected);
   }
 
   /**
@@ -1365,7 +1254,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertSame(Object actual, Object expected) {
-    assertSame(actual, expected, null);
+    assertThat(actual).isSameAs(expected);
   }
 
   /**
@@ -1377,9 +1266,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNotSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      failSame(actual, expected, message);
-    }
+    assertThat(actual)
+        .withFailMessage(message)
+        .isNotSameAs(expected);
   }
 
   /**
@@ -1390,7 +1279,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertNotSame(Object actual, Object expected) {
-    assertNotSame(actual, expected, null);
+    assertThat(actual).isNotSameAs(expected);
   }
 
   private static void failSame(Object actual, Object expected, String message) {
@@ -1438,7 +1327,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEquals(Collection<?> actual, Collection<?> expected) {
-    assertEquals(actual, expected, null);
+    assertThat(actual).isEqualTo(expected);
   }
 
   /**

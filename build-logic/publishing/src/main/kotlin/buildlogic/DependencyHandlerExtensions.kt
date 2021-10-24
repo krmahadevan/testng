@@ -28,7 +28,8 @@ fun DependencyHandler.reconstruct(variant: ResolvedVariantResult): Dependency {
             Category.REGULAR_PLATFORM -> platform(it)
             Category.ENFORCED_PLATFORM -> enforcedPlatform(it)
             Category.LIBRARY -> it
-            else -> throw IllegalStateException("Unexpected dependency type $category for id $id")
+            else -> it
+        //throw IllegalStateException("Unexpected dependency type $category for id $id")
         }
     }
 }
