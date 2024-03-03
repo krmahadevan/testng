@@ -12,6 +12,7 @@ import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
+import org.testng.IObject;
 import org.testng.ITestContext;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGListener;
@@ -71,13 +72,14 @@ public class FactoryMethod extends BaseTestMethod {
   // constructor outside of this package.
   FactoryMethod(
       ConstructorOrMethod com,
-      Object instance,
+      IObject.IdentifiableObject identifiable,
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
       ITestObjectFactory objectFactory,
       DataProviderHolder holder) {
-    super(objectFactory, com.getName(), com, annotationFinder, instance);
+    super(objectFactory, com.getName(), com, annotationFinder, identifiable);
     this.holder = holder;
+    Object instance = IObject.IdentifiableObject.unwrap(identifiable);
     init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
@@ -117,7 +119,7 @@ public class FactoryMethod extends BaseTestMethod {
 
     factoryAnnotation = annotationFinder.findAnnotation(com, IFactoryAnnotation.class);
 
-    m_instance = instance;
+    m_instance = getInstance();
     m_testContext = testContext;
     NoOpTestClass tc = new NoOpTestClass();
     tc.setTestClass(declaringClass);

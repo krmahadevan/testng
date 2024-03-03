@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.testng.IObject;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -233,7 +234,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
                 each.getConstructorOrMethod().getMethod(),
                 finder,
                 xmlTest,
-                object);
+                new IObject.IdentifiableObject(object));
         fixedMethods.add(m);
       }
     }

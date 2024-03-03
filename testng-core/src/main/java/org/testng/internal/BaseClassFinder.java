@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.Map;
 import org.testng.IClass;
+import org.testng.IObject;
 import org.testng.ITestClassFinder;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
@@ -32,7 +33,7 @@ public abstract class BaseClassFinder implements ITestClassFinder {
       ITestContext context,
       Class<?> cls,
       XmlClass xmlClass,
-      Object instance,
+      IObject.IdentifiableObject instance,
       IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
 

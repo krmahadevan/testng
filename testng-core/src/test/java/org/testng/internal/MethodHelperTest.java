@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IObject;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.Reporter;
@@ -36,7 +37,7 @@ public class MethodHelperTest {
             new String[0],
             new String[0],
             Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest(),
-            testClass);
+            new IObject.IdentifiableObject(testClass));
     method.addMethodDependedUpon("dummyDependsOnMethod");
     ITestNGMethod[] methods = new ITestNGMethod[0];
 

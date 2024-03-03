@@ -22,7 +22,7 @@ public class NoOpTestClass implements ITestClass {
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected ITestNGMethod[] m_afterGroupsMethods = new ITestNGMethod[0];
 
-  private final Object[] m_instances;
+  private final IdentifiableObject[] m_instances;
   private final long[] m_instanceHashes;
 
   private final XmlTest m_xmlTest;
@@ -47,7 +47,7 @@ public class NoOpTestClass implements ITestClass {
     m_afterGroupsMethods = testClass.getAfterGroupsMethods();
     m_afterClassMethods = testClass.getAfterClassMethods();
     m_afterTestMethods = testClass.getAfterTestMethods();
-    m_instances = testClass.getInstances(true);
+    m_instances = testClass.getObjects(true);
     m_instanceHashes = testClass.getInstanceHashCodes();
     m_xmlTest = testClass.getXmlTest();
     m_xmlClass = testClass.getXmlClass();
@@ -129,9 +129,13 @@ public class NoOpTestClass implements ITestClass {
     return m_instanceHashes;
   }
 
-  /** @see org.testng.ITestClass#getInstances(boolean) */
   @Override
   public Object[] getInstances(boolean reuse) {
+    return m_instances;
+  }
+
+  @Override
+  public IdentifiableObject[] getObjects(boolean create) {
     return m_instances;
   }
 
@@ -145,9 +149,16 @@ public class NoOpTestClass implements ITestClass {
     return m_testClass;
   }
 
-  /** @see org.testng.IClass#addInstance(java.lang.Object) */
   @Override
   public void addInstance(Object instance) {}
+
+  @Override
+  public void addObject(IdentifiableObject instance) {}
+
+  @Override
+  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    return getObjects(create);
+  }
 
   public void setTestClass(Class<?> declaringClass) {
     m_testClass = declaringClass;

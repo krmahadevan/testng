@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.testng.IDataProviderMethod;
+import org.testng.IObject;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -33,7 +34,7 @@ public class TestNGMethod extends BaseTestMethod {
       Method method,
       IAnnotationFinder finder,
       XmlTest xmlTest,
-      Object instance) {
+      IObject.IdentifiableObject instance) {
     this(objectFactory, method, finder, true, xmlTest, instance);
   }
 
@@ -43,7 +44,7 @@ public class TestNGMethod extends BaseTestMethod {
       IAnnotationFinder finder,
       boolean initialize,
       XmlTest xmlTest,
-      Object instance) {
+      IObject.IdentifiableObject instance) {
     super(objectFactory, method.getName(), new ConstructorOrMethod(method), finder, instance);
     setXmlTest(xmlTest);
 
@@ -171,7 +172,7 @@ public class TestNGMethod extends BaseTestMethod {
             getAnnotationFinder(),
             false,
             getXmlTest(),
-            getInstance());
+            new IObject.IdentifiableObject(getInstance(), getInstanceId()));
     ITestClass tc = getTestClass();
     NoOpTestClass testClass = new NoOpTestClass(tc);
     testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));

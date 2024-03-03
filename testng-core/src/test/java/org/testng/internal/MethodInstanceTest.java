@@ -165,7 +165,20 @@ public class MethodInstanceTest {
     public void addInstance(Object instance) {}
 
     @Override
+    public void addObject(IdentifiableObject instance) {}
+
+    @Override
     public Object[] getInstances(boolean reuse) {
+      return null;
+    }
+
+    @Override
+    public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+      return null;
+    }
+
+    @Override
+    public IdentifiableObject[] getObjects(boolean create) {
       return null;
     }
 

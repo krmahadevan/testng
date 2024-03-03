@@ -98,10 +98,23 @@ public class FakeTestClass implements ITestClass {
   }
 
   @Override
+  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    return new IdentifiableObject[0];
+  }
+
+  @Override
+  public IdentifiableObject[] getObjects(boolean create) {
+    return getObjects(create, "");
+  }
+
+  @Override
   public long[] getInstanceHashCodes() {
     return new long[0];
   }
 
   @Override
   public void addInstance(Object instance) {}
+
+  @Override
+  public void addObject(IdentifiableObject instance) {}
 }
