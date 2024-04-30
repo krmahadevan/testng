@@ -20,6 +20,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.L
 import static test.thread.parallelization.TestNgRunStateTracker.logEvent;
 
 import java.util.concurrent.TimeUnit;
+import org.testng.IInstanceInfo;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
@@ -105,7 +106,8 @@ public class TestNgRunStateListener implements ISuiteListener, ITestListener {
     return (buildEventLog(result.getTestContext(), event))
         .addData(METHOD_NAME, result.getMethod().getMethodName())
         .addData(CLASS_NAME, result.getMethod().getRealClass().getCanonicalName())
-        .addData(CLASS_INSTANCE, result.getMethod().getInstance())
+        .addData(
+            CLASS_INSTANCE, ((IInstanceInfo<?>) result.getMethod().getInstance()).getInstance())
         .addData(GROUPS_DEPENDED_ON, result.getMethod().getGroupsDependedUpon())
         .addData(METHODS_DEPENDED_ON, result.getMethod().getMethodsDependedUpon())
         .addData(GROUPS_BELONGING_TO, result.getMethod().getGroups());

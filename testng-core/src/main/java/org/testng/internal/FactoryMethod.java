@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
+import org.testng.IFactoryMethod;
 import org.testng.IInstanceInfo;
 import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
@@ -31,7 +32,7 @@ import org.testng.xml.XmlTest;
 public class FactoryMethod extends BaseTestMethod {
 
   private final IFactoryAnnotation factoryAnnotation;
-  private final Object m_instance;
+  private final IInstanceInfo<?> m_instance;
   private final ITestContext m_testContext;
   private String m_factoryCreationFailedMessage = null;
   private final DataProviderHolder holder;
@@ -73,14 +74,14 @@ public class FactoryMethod extends BaseTestMethod {
   // constructor outside of this package.
   FactoryMethod(
       ConstructorOrMethod com,
-      IObject.IdentifiableObject identifiable,
+      IInstanceInfo<?> iinstance,
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
       ITestObjectFactory objectFactory,
       DataProviderHolder holder) {
-    super(objectFactory, com.getName(), com, annotationFinder, identifiable);
+    super(objectFactory, com.getName(), com, annotationFinder, iinstance);
     this.holder = holder;
-    Object instance = IObject.IdentifiableObject.unwrap(identifiable);
+    Object instance = iinstance == null ? null : iinstance.getInstance();
     init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
@@ -183,9 +184,11 @@ public class FactoryMethod extends BaseTestMethod {
           // skipped value
           continue;
         }
+        IFactoryMethod factoryMethod = () -> parameters;
         ConstructorOrMethod com = getConstructorOrMethod();
         if (com.getMethod() != null) {
-          Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
+          Object[] testInstances =
+              (Object[]) com.getMethod().invoke(m_instance.getInstance(), parameters);
           if (testInstances == null) {
             testInstances = new Object[] {};
           }
@@ -201,10 +204,10 @@ public class FactoryMethod extends BaseTestMethod {
                 Arrays.stream(testInstances)
                     .map(
                         instance ->
-                            new ParameterInfo(
+                            new ParameterInfo<>(
                                 instance,
                                 instancePosition,
-                                parameters,
+                                factoryMethod,
                                 invocationCounter.getAndIncrement()))
                     .collect(Collectors.toList()));
           } else {
@@ -212,10 +215,10 @@ public class FactoryMethod extends BaseTestMethod {
               int i = index - position;
               if (i >= 0 && i < testInstances.length) {
                 result.add(
-                    new ParameterInfo(
+                    new ParameterInfo<>(
                         testInstances[i],
                         position,
-                        parameters,
+                        factoryMethod,
                         invocationCounter.getAndIncrement()));
               }
             }
@@ -225,8 +228,8 @@ public class FactoryMethod extends BaseTestMethod {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
             Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
             result.add(
-                new ParameterInfo(
-                    instance, position, parameters, invocationCounter.getAndIncrement()));
+                new ParameterInfo<>(
+                    instance, position, factoryMethod, invocationCounter.getAndIncrement()));
           }
           position++;
         }

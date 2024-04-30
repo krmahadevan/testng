@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.IInstanceInfo;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlClass;
@@ -24,7 +25,7 @@ public class NoOpTestClass implements ITestClass, IObject {
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected List<ITestNGMethod> m_afterGroupsMethods = new ArrayList<>();
 
-  private final IdentifiableObject[] m_instances;
+  private final IInstanceInfo<?>[] m_instances;
   private final long[] m_instanceHashes;
 
   private final XmlTest m_xmlTest;
@@ -150,10 +151,10 @@ public class NoOpTestClass implements ITestClass, IObject {
   public void addInstance(Object instance) {}
 
   @Override
-  public void addObject(IdentifiableObject instance) {}
+  public void addObject(IInstanceInfo<?> instance) {}
 
   @Override
-  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+  public IInstanceInfo<?>[] getObjects(boolean create, String errorMsgPrefix) {
     return m_instances;
   }
 

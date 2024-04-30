@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.xml.XmlSuite;
@@ -49,6 +50,9 @@ public class GroupConfigMethodArguments extends Arguments {
     }
 
     public Builder forInstance(Object instance) {
+      if (instance instanceof IInstanceInfo) {
+        throw new IllegalArgumentException();
+      }
       this.instance = instance;
       return this;
     }

@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 
 public class Arguments {
@@ -10,6 +11,9 @@ public class Arguments {
   protected final Map<String, String> params;
 
   protected Arguments(Object instance, ITestNGMethod tm, Map<String, String> params) {
+    if (instance instanceof IInstanceInfo) {
+      throw new IllegalArgumentException();
+    }
     this.instance = instance;
     this.tm = tm;
     this.params = params;

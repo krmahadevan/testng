@@ -15,6 +15,7 @@ import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
+import org.testng.IInstanceInfo;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuiteRunnerListener;
 import org.testng.ITestClass;
@@ -249,9 +250,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
       IConfigurationAnnotation configurationAnnotation = null;
       try {
-        Object inst = tm.getInstance();
-        if (inst == null) {
-          inst = arguments.getInstance();
+        Object inst = arguments.getInstance();
+        IInstanceInfo<?> info = (IInstanceInfo<?>) tm.getInstance();
+        if (info != null && info.getInstance() != null) {
+          inst = info.getInstance();
         }
         Class<?> objectClass = inst.getClass();
         ConstructorOrMethod method = tm.getConstructorOrMethod();

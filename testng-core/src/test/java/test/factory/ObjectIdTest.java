@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
+import org.testng.IInstanceInfo;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -32,7 +33,7 @@ public class ObjectIdTest extends SimpleBaseTest {
     TestNG testng = create(FactoryTestCase.class);
     testng.setParallel(XmlSuite.ParallelMode.INSTANCES);
     testng.run();
-    Map<UUID, Set<Object>> objectMap = FactoryTestCase.objectMap;
+    Map<UUID, Set<IInstanceInfo<?>>> objectMap = FactoryTestCase.objectMap;
     assertThat(objectMap.keySet()).hasSize(100);
     SoftAssertions assertions = new SoftAssertions();
     objectMap.forEach((key, value) -> assertions.assertThat(value).hasSize(1));

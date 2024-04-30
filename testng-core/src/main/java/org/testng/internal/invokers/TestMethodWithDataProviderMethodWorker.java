@@ -3,6 +3,7 @@ package org.testng.internal.invokers;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import org.testng.IInstanceInfo;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -19,7 +20,7 @@ public class TestMethodWithDataProviderMethodWorker
 
   private final ITestNGMethod m_testMethod;
   private final Object[] m_parameterValues;
-  private final Object m_instance;
+  private final IInstanceInfo<?> m_instance;
   private final Map<String, String> m_parameters;
   private final ITestClass m_testClass;
   private final ITestNGMethod[] m_beforeMethods;
@@ -40,7 +41,7 @@ public class TestMethodWithDataProviderMethodWorker
       ITestNGMethod testMethod,
       int parameterIndex,
       Object[] parameterValues,
-      Object instance,
+      IInstanceInfo<?> instance,
       Map<String, String> parameters,
       ITestClass testClass,
       ITestNGMethod[] beforeMethods,
@@ -80,7 +81,7 @@ public class TestMethodWithDataProviderMethodWorker
       tmpResults.add(
           m_testInvoker.invokeTestMethod(
               new Builder()
-                  .usingInstance(m_instance)
+                  .usingInstance(m_instance.getInstance())
                   .forTestMethod(m_testMethod)
                   .withParameterValues(m_parameterValues)
                   .withParametersIndex(m_parameterIndex)

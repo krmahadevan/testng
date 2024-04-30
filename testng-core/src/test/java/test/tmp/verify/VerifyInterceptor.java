@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
@@ -56,8 +57,8 @@ public class VerifyInterceptor implements IMethodInterceptor {
               }
 
               @Override
-              public Object getInstance() {
-                return tm.getInstance();
+              public IInstanceInfo<?> getInstance() {
+                return (IInstanceInfo<?>) tm.getInstance();
               }
             });
       }

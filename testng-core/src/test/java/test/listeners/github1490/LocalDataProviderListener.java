@@ -3,6 +3,7 @@ package test.listeners.github1490;
 import java.util.List;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
@@ -25,7 +26,10 @@ public class LocalDataProviderListener implements IDataProviderListener {
   private static void log(ITestNGMethod method, String prefix) {
     if (method.getInstance() != null) {
       messages.add(
-          prefix + method.getInstance().getClass().getName() + "." + method.getMethodName());
+          prefix
+              + ((IInstanceInfo<?>) method.getInstance()).getInstanceClass().getName()
+              + "."
+              + method.getMethodName());
     } else {
       messages.add(prefix + method.getMethodName());
     }

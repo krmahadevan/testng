@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -323,7 +324,7 @@ public class MethodHelper {
     // Create the graph
     //
 
-    Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
+    Map<IInstanceInfo<?>, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
 
     XmlTest xmlTest = null;
 
@@ -341,7 +342,8 @@ public class MethodHelper {
         // Method has instance
         if (m.getInstance() != null) {
           // Get other methods with the same instance
-          List<ITestNGMethod> instanceMethods = testInstances.get(m.getInstance());
+          List<ITestNGMethod> instanceMethods =
+              testInstances.get((IInstanceInfo<?>) m.getInstance());
           try {
             // Search for other methods that depends upon with the same instance
             methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
@@ -413,11 +415,15 @@ public class MethodHelper {
    * @param methods Methods to be sorted
    * @return Map of Instances as the keys and the methods associated with the instance as the values
    */
-  private static Map<Object, List<ITestNGMethod>> sortMethodsByInstance(ITestNGMethod[] methods) {
+  private static Map<IInstanceInfo<?>, List<ITestNGMethod>> sortMethodsByInstance(
+      ITestNGMethod[] methods) {
     return Arrays.stream(methods)
         .parallel()
         .filter(m -> Objects.nonNull(m.getInstance()))
-        .collect(Collectors.groupingBy(ITestNGMethod::getInstance, Collectors.toList()));
+        .collect(
+            Collectors.groupingBy(
+                (ITestNGMethod iTestNGMethod) -> (IInstanceInfo<?>) iTestNGMethod.getInstance(),
+                Collectors.toList()));
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {

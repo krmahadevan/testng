@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IAnnotationTransformer;
+import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -131,7 +132,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass = m.getDeclaringClass();
     if (tm.getInstance() != null) {
-      testClass = tm.getInstance().getClass();
+      testClass = ((IInstanceInfo<?>) tm.getInstance()).getInstanceClass();
     }
     Annotation annotation = AnnotationHelper.getAnnotationFromMethod(m, a);
     if (annotation == null) {

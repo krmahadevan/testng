@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -50,7 +50,6 @@ public class ConfigurationMethod extends BaseTestMethod {
 
   private final boolean m_isIgnoreFailure;
   private boolean m_inheritGroupsFromTestClass = false;
-  private final IParameterInfo factoryMethodInfo;
 
   private ConfigurationMethod(
       ITestObjectFactory objectFactory,
@@ -68,18 +67,11 @@ public class ConfigurationMethod extends BaseTestMethod {
       String[] beforeGroups,
       String[] afterGroups,
       boolean initialize,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     super(objectFactory, com.getName(), com, annotationFinder, instance);
     if (initialize) {
       init();
     }
-
-    this.factoryMethodInfo =
-        (IParameterInfo)
-            Optional.ofNullable(instance)
-                .map(IObject.IdentifiableObject::getInstance)
-                .filter(it -> it instanceof IParameterInfo)
-                .orElse(null);
 
     m_isBeforeSuiteConfiguration = isBeforeSuite;
     m_isAfterSuiteConfiguration = isAfterSuite;
@@ -99,14 +91,6 @@ public class ConfigurationMethod extends BaseTestMethod {
     m_afterGroups = afterGroups;
   }
 
-  @Override
-  public IParameterInfo getFactoryMethodParamsInfo() {
-    if (this.factoryMethodInfo != null) {
-      return this.factoryMethodInfo;
-    }
-    return super.getFactoryMethodParamsInfo();
-  }
-
   public ConfigurationMethod(
       ITestObjectFactory objectFactory,
       ConstructorOrMethod com,
@@ -123,7 +107,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       String[] beforeGroups,
       String[] afterGroups,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     this(
         objectFactory,
         com,
@@ -157,7 +141,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isBeforeMethod,
       boolean isAfterMethod,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod method : methods) {
       if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
@@ -197,7 +181,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
 
     return createMethods(
         objectFactory,
@@ -221,7 +205,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -244,7 +228,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -266,7 +250,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     ITestNGMethod[] result = new ITestNGMethod[methods.length];
     for (int i = 0; i < methods.length; i++) {
       result[i] =
@@ -297,7 +281,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     return Arrays.stream(methods)
         .parallel()
         .map(
@@ -328,7 +312,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -508,7 +492,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             getBeforeGroups(),
             getAfterGroups(),
             false /* do not call init() */,
-            new IObject.IdentifiableObject(getInstance(), getInstanceId()));
+            getInstance());
     clone.m_testClass = getTestClass();
     clone.setDate(getDate());
     clone.setGroups(getGroups());

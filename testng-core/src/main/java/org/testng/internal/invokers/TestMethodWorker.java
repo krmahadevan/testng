@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
+import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -122,7 +124,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
-      Object key = Objects.requireNonNull(IInstanceIdentity.getInstanceId(testMethod));
+      UUID key =
+          Objects.requireNonNull(((IInstanceInfo<?>) testMethodInstance.getInstance()).getUid());
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -131,7 +134,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMethod.getInstance());
+        invokeTestMethods(testMethod, (IInstanceInfo<?>) testMethodInstance.getInstance());
       } finally {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -144,7 +147,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return threadIdToRunOn != -1;
   }
 
-  protected void invokeTestMethods(ITestNGMethod tm, Object instance) {
+  protected void invokeTestMethods(ITestNGMethod tm, IInstanceInfo<?> instance) {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
     // several times and these methods are run in parallel, the results
@@ -164,11 +167,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   /** Invoke the @BeforeClass methods if not done already */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
+    Map<ITestClass, Set<IInstanceInfo<?>>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
-    Set<Object> instances =
+    Set<IInstanceInfo<?>> instances =
         invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newConcurrentHashSet());
-    Object instance = mi.getInstance();
+    IInstanceInfo<?> instance = (IInstanceInfo<?>) mi.getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);
       List<IClassListener> original =
@@ -183,7 +186,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
                   ((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance))
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
-              .usingInstance(instance)
+              .usingInstance(instance.getInstance())
               .build();
       m_configInvoker.invokeConfigurations(attributes);
     }
@@ -200,17 +203,18 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     // Invoke after class methods if this test method is the last one
     //
-    List<Object> invokeInstances = Lists.newArrayList();
+    List<IInstanceInfo<?>> invokeInstances = Lists.newArrayList();
     ITestNGMethod tm = mi.getMethod();
-    boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance());
+    boolean removalSuccessful =
+        m_classMethodMap.removeAndCheckIfLast(tm, (IInstanceInfo<?>) mi.getInstance());
     if (!removalSuccessful) {
       return;
     }
-    Map<ITestClass, Set<Object>> invokedAfterClassMethods =
+    Map<ITestClass, Set<IInstanceInfo<?>>> invokedAfterClassMethods =
         m_classMethodMap.getInvokedAfterClassMethods();
-    Set<Object> instances =
+    Set<IInstanceInfo<?>> instances =
         invokedAfterClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
-    Object inst = mi.getInstance();
+    IInstanceInfo<?> inst = (IInstanceInfo<?>) mi.getInstance();
     if (!instances.contains(inst)) {
       invokeInstances.add(inst);
     }
@@ -224,14 +228,15 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
-  private void invokeAfterClassConfigurations(ITestClass testClass, List<Object> invokeInstances) {
-    for (Object invokeInstance : invokeInstances) {
+  private void invokeAfterClassConfigurations(
+      ITestClass testClass, List<IInstanceInfo<?>> invokeInstances) {
+    for (IInstanceInfo<?> invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes =
           new Builder()
               .forTestClass(testClass)
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
-              .usingInstance(invokeInstance)
+              .usingInstance(invokeInstance.getInstance())
               .usingConfigMethodsAs(
                   ((ITestClassConfigInfo) testClass).getInstanceAfterClassMethods(invokeInstance))
               .build();

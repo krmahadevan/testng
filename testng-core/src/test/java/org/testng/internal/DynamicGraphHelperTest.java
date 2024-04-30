@@ -110,7 +110,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     objects.add(new FactoryTestClassSample("two"));
     for (FactoryTestClassSample object : objects) {
       for (ITestNGMethod method : methods) {
-        methodList.add(new FakeWrappedFactoryMethod(method, object));
+        methodList.add(new FakeWrappedFactoryMethod(method, new InstanceInfo<>(object)));
       }
     }
     ITestNGMethod[] allMethods = methodList.toArray(new ITestNGMethod[0]);
@@ -233,7 +233,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
                 each.getConstructorOrMethod().getMethod(),
                 finder,
                 xmlTest,
-                new IObject.IdentifiableObject(object));
+                new InstanceInfo<>(object));
         fixedMethods.add(m);
       }
     }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import org.testng.Assert;
 import org.testng.IClass;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -165,7 +166,7 @@ public class MethodInstanceTest {
     public void addInstance(Object instance) {}
 
     @Override
-    public void addObject(IObject.IdentifiableObject instance) {
+    public void addObject(IInstanceInfo<?> instance) {
       // Intentionally left blank
     }
 
@@ -175,8 +176,8 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public IObject.IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
-      return new IObject.IdentifiableObject[0];
+    public IInstanceInfo<?>[] getObjects(boolean create, String errorMsgPrefix) {
+      return new IInstanceInfo<?>[0];
     }
 
     @Override

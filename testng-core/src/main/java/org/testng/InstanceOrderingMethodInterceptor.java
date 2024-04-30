@@ -15,10 +15,10 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
 
   /** The default method interceptor which sorts methods by instances (i.e. by class). */
   private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
-    List<Object> instanceList = Lists.newArrayList();
+    List<IInstanceInfo<?>> instanceList = Lists.newArrayList();
     Map<Object, List<IMethodInstance>> map = Maps.newLinkedHashMap();
     for (IMethodInstance mi : methods) {
-      Object instance = mi.getInstance();
+      IInstanceInfo<?> instance = (IInstanceInfo<?>) mi.getInstance();
       if (!instanceList.contains(instance)) {
         instanceList.add(instance);
       }

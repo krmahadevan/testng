@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
@@ -35,7 +35,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private static final String PREFIX = "[TestNGClassFinder]";
   private final ITestContext m_testContext;
-  private final Map<Class<?>, List<IObject.IdentifiableObject>> m_instanceMap = Maps.newHashMap();
+  private final Map<Class<?>, List<IInstanceInfo<?>>> m_instanceMap = new HashMap<>();
   private final DataProviderHolder holder;
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder annotationFinder;
@@ -48,7 +48,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   public TestNGClassFinder(
       ClassInfoMap cim,
-      Map<Class<?>, List<IObject.IdentifiableObject>> instanceMap,
+      Map<Class<?>, List<IInstanceInfo<?>>> instanceMap,
       IConfiguration configuration,
       ITestContext testContext,
       DataProviderHolder holder) {
@@ -72,9 +72,9 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     // Add all the instances we found to their respective IClasses
     //
-    for (Map.Entry<Class<?>, List<IObject.IdentifiableObject>> entry : m_instanceMap.entrySet()) {
+    for (Map.Entry<Class<?>, List<IInstanceInfo<?>>> entry : m_instanceMap.entrySet()) {
       Class<?> clazz = entry.getKey();
-      for (IObject.IdentifiableObject instance : entry.getValue()) {
+      for (IInstanceInfo<?> instance : entry.getValue()) {
         IClass ic = getIClass(clazz);
         IObject.cast(ic).ifPresent(it -> it.addObject(instance));
       }
@@ -83,7 +83,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private void processClass(
       ClassInfoMap cim,
-      Map<Class<?>, List<IObject.IdentifiableObject>> instanceMap,
+      Map<Class<?>, List<IInstanceInfo<?>>> instanceMap,
       IConfiguration configuration,
       Class<?> cls) {
     if (null == cls) {
@@ -95,8 +95,8 @@ public class TestNGClassFinder extends BaseClassFinder {
       Utils.log(PREFIX, 3, "SKIPPING CLASS " + cls + " no TestNG annotations found");
       return;
     }
-    List<IObject.IdentifiableObject> allInstances = instanceMap.get(cls);
-    IObject.IdentifiableObject thisInstance =
+    List<IInstanceInfo<?>> allInstances = instanceMap.get(cls);
+    IInstanceInfo<?> thisInstance =
         (allInstances != null && !allInstances.isEmpty()) ? allInstances.get(0) : null;
 
     // If annotation class and instances are abstract, skip them
@@ -164,9 +164,9 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   private ClassInfoMap processFactory(IClass ic, ConstructorOrMethod factoryMethod) {
-    IObject.IdentifiableObject[] theseInstances = IObject.objects(ic, false);
+    IInstanceInfo<?>[] theseInstances = IObject.objects(ic, false);
 
-    IObject.IdentifiableObject instance = theseInstances.length != 0 ? theseInstances[0] : null;
+    IInstanceInfo<?> instance = theseInstances.length != 0 ? theseInstances[0] : null;
     FactoryMethod fm =
         new FactoryMethod(
             factoryMethod, instance, annotationFinder, m_testContext, objectFactory, holder);
@@ -179,7 +179,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     // If the factory returned IInstanceInfo, get the class from it,
     // otherwise, just call getClass() on the returned instances
     int i = 0;
-    for (ITestClassInstance o : fm.invoke()) {
+    for (ITestClassInstance<?> o : fm.invoke()) {
       if (o == null) {
         throw new TestNGException(
             "The factory " + fm + " returned a null instance" + "at index " + i);
@@ -191,7 +191,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         addInstance(ii);
         oneMoreClass = ii.getInstanceClass();
       } else {
-        addInstance(new IObject.IdentifiableObject(o));
+        addInstance(o);
         oneMoreClass = objToInspect.getClass();
       }
       if (!classExists(oneMoreClass)) {
@@ -325,21 +325,13 @@ public class TestNGClassFinder extends BaseClassFinder {
   // IInstanceInfo<T> should be replaced by IInstanceInfo<?> but eclipse complains against it.
   // See: https://github.com/cbeust/testng/issues/1070
   private <T> void addInstance(IInstanceInfo<T> ii) {
-    addInstance(ii.getInstanceClass(), new IObject.IdentifiableObject(ii.getInstance()));
-  }
-
-  private void addInstance(IObject.IdentifiableObject o) {
-    Class<?> key = o.getInstance().getClass();
-    if (o.getInstance() instanceof ITestClassInstance) {
-      key = ((ITestClassInstance) o.getInstance()).getInstance().getClass();
-    }
-    addInstance(key, o);
+    addInstance(ii.getInstanceClass(), ii);
   }
 
   // Class<S> should be replaced by Class<? extends T> but java doesn't fail as expected
   // See: https://github.com/cbeust/testng/issues/1070
-  private <T, S extends T> void addInstance(Class<S> clazz, IObject.IdentifiableObject instance) {
-    List<IObject.IdentifiableObject> instances =
+  private <T, S extends T> void addInstance(Class<S> clazz, IInstanceInfo<?> instance) {
+    List<IInstanceInfo<?>> instances =
         m_instanceMap.computeIfAbsent(clazz, key -> Lists.newArrayList());
     instances.add(instance);
   }

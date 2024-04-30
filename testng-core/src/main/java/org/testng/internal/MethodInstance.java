@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.Comparator;
 import java.util.List;
+import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Objects;
@@ -22,8 +23,8 @@ public class MethodInstance implements IMethodInstance {
   }
 
   @Override
-  public Object getInstance() {
-    return m_method.getInstance();
+  public IInstanceInfo<?> getInstance() {
+    return (IInstanceInfo<?>) m_method.getInstance();
   }
 
   @Override

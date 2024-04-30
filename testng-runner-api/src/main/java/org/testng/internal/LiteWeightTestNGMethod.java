@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -20,7 +21,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final Class<?> realClass;
   private ITestClass testClass;
   private final String methodName;
-  private final Object instance;
+  private final IInstanceInfo<?> instance;
   private final long[] instanceHashCodes;
   private final String[] groups;
   private final String[] groupsDependedUpon;
@@ -71,7 +72,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     realClass = iTestNGMethod.getRealClass();
     testClass = iTestNGMethod.getTestClass();
     methodName = iTestNGMethod.getMethodName();
-    instance = iTestNGMethod.getInstance();
+    instance = (IInstanceInfo<?>) iTestNGMethod.getInstance();
     instanceHashCodes = iTestNGMethod.getInstanceHashCodes();
     groups = iTestNGMethod.getGroups();
     groupsDependedUpon = iTestNGMethod.getGroupsDependedUpon();
@@ -182,7 +183,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object getInstance() {
+  public IInstanceInfo<?> getInstance() {
     return instance;
   }
 

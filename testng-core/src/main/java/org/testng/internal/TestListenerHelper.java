@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
+import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
@@ -157,7 +158,7 @@ public final class TestListenerHelper {
     try {
       if (finder != null) {
         IClass ic = finder.getIClass(factoryClass);
-        IObject.IdentifiableObject[] created = IObject.objects(ic, false);
+        IInstanceInfo<?>[] created = IObject.objects(ic, false);
         if (created.length != 0) {
           listenerFactory = (ITestNGListenerFactory) created[0].getInstance();
         }

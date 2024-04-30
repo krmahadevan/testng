@@ -5,5 +5,6 @@ public interface IMethodInstance {
 
   ITestNGMethod getMethod();
 
+  // TODO deprecate return IInstanceInfo<?>
   Object getInstance();
 }

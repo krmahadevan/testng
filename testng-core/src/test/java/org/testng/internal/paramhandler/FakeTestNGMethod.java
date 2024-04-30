@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -58,7 +59,7 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object getInstance() {
+  public IInstanceInfo<?> getInstance() {
     return null;
   }
 

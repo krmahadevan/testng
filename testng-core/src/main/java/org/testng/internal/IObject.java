@@ -1,9 +1,10 @@
 package org.testng.internal;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.testng.IInstanceInfo;
+import org.testng.ITestClassInstance;
 
 /**
  * Represents the associations of a class with one or more instances. Relevant with <code>@Factory
@@ -18,15 +19,15 @@ public interface IObject {
    * @param create - <code>true</code> if objects should be created before returning.
    * @param errorMsgPrefix - Text that should be prefixed to the error message when there are
    *     issues. Can be empty.
-   * @return - An array of {@link IdentifiableObject} objects
+   * @return - An array of {@link ITestClassInstance} objects
    */
-  IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix);
+  IInstanceInfo<?>[] getObjects(boolean create, String errorMsgPrefix);
 
   /** @return - An array representing the hash codes of the corresponding instances. */
   long[] getInstanceHashCodes();
 
   /** @param instance - The instance that should be added to the list of instances. */
-  void addObject(IdentifiableObject instance);
+  void addObject(IInstanceInfo<?> instance);
 
   /**
    * @param object - The object that should be inspected for its compatibility with {@link IObject}.
@@ -39,10 +40,10 @@ public interface IObject {
   /**
    * @param object - The object that should be inspected for its compatibility with {@link IObject}.
    * @param create - <code>true</code> if objects should be created before returning.
-   * @return - An array (can be empty is instance compatibility fails) of {@link IdentifiableObject}
+   * @return - An array (can be empty is instance compatibility fails) of {@link ITestClassInstance}
    *     objects.
    */
-  static IdentifiableObject[] objects(Object object, boolean create) {
+  static IInstanceInfo<?>[] objects(Object object, boolean create) {
     return objects(object, create, "");
   }
 
@@ -51,13 +52,13 @@ public interface IObject {
    * @param create - <code>true</code> if objects should be created before returning.
    * @param errorMsgPrefix - Text that should be prefixed to the error message when there are
    *     issues. Can be empty.
-   * @return - An array (can be empty is instance compatibility fails) of {@link IdentifiableObject}
+   * @return - An array (can be empty is instance compatibility fails) of {@link ITestClassInstance}
    *     objects.
    */
-  static IdentifiableObject[] objects(Object object, boolean create, String errorMsgPrefix) {
+  static IInstanceInfo<?>[] objects(Object object, boolean create, String errorMsgPrefix) {
     return cast(object)
         .map(it -> it.getObjects(create, errorMsgPrefix))
-        .orElse(new IdentifiableObject[] {});
+        .orElse(new ITestClassInstance<?>[0]);
   }
 
   /**
@@ -70,49 +71,6 @@ public interface IObject {
       return Optional.of((IObject) object);
     }
     return Optional.empty();
-  }
-
-  /** A wrapper object that associates a unique id to every unique test class object. */
-  class IdentifiableObject {
-    private final Object instance;
-    private final UUID instanceId;
-
-    public IdentifiableObject(Object instance) {
-      this(instance, UUID.randomUUID());
-    }
-
-    public IdentifiableObject(Object instance, UUID instanceId) {
-      this.instance = instance;
-      this.instanceId = instanceId;
-    }
-
-    public static Object unwrap(IdentifiableObject object) {
-      if (object == null) {
-        return null;
-      }
-      return object.getInstance();
-    }
-
-    public UUID getInstanceId() {
-      return instanceId;
-    }
-
-    public Object getInstance() {
-      return instance;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-      if (this == object) return true;
-      if (object == null || getClass() != object.getClass()) return false;
-      IdentifiableObject that = (IdentifiableObject) object;
-      return Objects.equals(instanceId, that.instanceId);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(instanceId);
-    }
   }
 
   /**

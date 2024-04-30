@@ -82,13 +82,15 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
 
   @Test(dataProvider = "testdata", description = "GITHUB-3111")
   public void ensureCurrentIndexWorksForFactoryPoweredTests(Class<?> klass, Integer[] expected) {
-    List<ITestClassInstance> params = new ArrayList<>();
+    List<ITestClassInstance<?>> params = new ArrayList<>();
     TestNG testng = create(klass);
     testng.addListener(
         new ITestListener() {
           @Override
           public void onTestSuccess(ITestResult result) {
-            params.add(result.getMethod().getFactoryMethodParamsInfo());
+            if (result.getMethod().getInstance() instanceof ITestClassInstance<?>) {
+              params.add(((ITestClassInstance<?>) result.getMethod().getInstance()));
+            }
           }
         });
     testng.run();

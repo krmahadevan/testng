@@ -4,6 +4,7 @@ import static org.testng.Assert.fail;
 
 import java.util.Comparator;
 import java.util.List;
+import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
@@ -69,11 +70,17 @@ public class ParallelByInstancesInterceptorTest {
   }
 
   private static boolean isHighPriority(IMethodInstance instance) {
-    return instance.getInstance().getClass().getAnnotation(TestNG1396HighPriority.class) != null;
+    return ((IInstanceInfo<?>) instance.getInstance())
+            .getInstanceClass()
+            .getAnnotation(TestNG1396HighPriority.class)
+        != null;
   }
 
   private static boolean isHighPriority(ITestNGMethod method) {
-    return method.getInstance().getClass().getAnnotation(TestNG1396HighPriority.class) != null;
+    return ((IInstanceInfo<?>) method.getInstance())
+            .getInstanceClass()
+            .getAnnotation(TestNG1396HighPriority.class)
+        != null;
   }
 
   public class ReverseOrderTestInterceptor implements IMethodInterceptor {

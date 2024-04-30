@@ -648,9 +648,9 @@ public class Parameters {
       }
 
       if (isDynamicDataProvider) {
-        result = new DataProviderMethodRemovable(instanceToUse, m, dp);
+        result = new DataProviderMethodRemovable(new InstanceInfo<>(instanceToUse), m, dp);
       } else {
-        result = new DataProviderMethod(instanceToUse, m, dp);
+        result = new DataProviderMethod(new InstanceInfo<>(instanceToUse), m, dp);
       }
     }
 

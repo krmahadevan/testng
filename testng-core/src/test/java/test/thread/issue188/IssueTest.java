@@ -12,6 +12,8 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class IssueTest extends SimpleBaseTest {
 
   @Test
@@ -30,7 +32,7 @@ public class IssueTest extends SimpleBaseTest {
       testng.run();
       Set<Long> timestamps = Issue188TestSample.timestamps.keySet();
       if (timestamps.size() == 1) {
-        Assertions.assertThat(Issue188TestSample.timestamps.values().iterator().next())
+        assertThat(Issue188TestSample.timestamps.values().iterator().next())
             .withFailMessage(
                 "Since all tests were started simultaneously,test method count should have been 6")
             .hasSize(6);
@@ -39,12 +41,13 @@ public class IssueTest extends SimpleBaseTest {
             Issue188TestSample.timestamps.keySet().stream().sorted().collect(Collectors.toList());
         String allTimeStamps =
             keyset.stream().map(Objects::toString).collect(Collectors.joining(","));
+        assertThat(keyset).isNotEmpty();
         long prev = keyset.get(0);
         int permissibleLag = 40;
         for (int i = 1; i < keyset.size(); i++) {
           long current = keyset.get(i);
           long diff = current - prev;
-          Assertions.assertThat(diff)
+          assertThat(diff)
               .withFailMessage(
                   "Test methods should have started within a lag of max "
                       + permissibleLag

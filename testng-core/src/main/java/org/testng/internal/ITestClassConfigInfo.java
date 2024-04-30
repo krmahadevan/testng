@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.List;
+import org.testng.IInstanceInfo;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
@@ -22,9 +23,9 @@ public interface ITestClassConfigInfo {
    * @param instance object hashcode
    * @return All before class methods of instance
    */
-  List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance);
+  List<ITestNGMethod> getInstanceBeforeClassMethods(IInstanceInfo<?> instance);
 
-  List<ITestNGMethod> getInstanceAfterClassMethods(Object instance);
+  List<ITestNGMethod> getInstanceAfterClassMethods(IInstanceInfo<?> instance);
 
   static List<ITestNGMethod> allBeforeClassMethods(ITestClass tc) {
     if (tc instanceof ITestClassConfigInfo) {
