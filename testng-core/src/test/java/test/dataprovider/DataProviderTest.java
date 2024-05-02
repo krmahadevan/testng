@@ -563,11 +563,12 @@ public class DataProviderTest extends SimpleBaseTest {
     IDataProviderMethod dpm = method.getDataProviderMethod();
     assertThat(dpm).isNotNull();
     if (performInstanceCheck) {
-      assertThat(dpm.getInstance())
+      assertThat(((IInstanceInfo<?>) dpm.getInstance()).getInstance())
           .isEqualTo(((IInstanceInfo<?>) method.getInstance()).getInstance());
     }
     assertThat(dpm.getMethod().getName()).isEqualTo("getData");
-    assertThat(dpm.getInstance().getClass()).isEqualTo(dataProviderClass);
+    assertThat(((IInstanceInfo<?>) dpm.getInstance()).getInstance().getClass())
+        .isEqualTo(dataProviderClass);
   }
 
   @DataProvider(name = "testData")

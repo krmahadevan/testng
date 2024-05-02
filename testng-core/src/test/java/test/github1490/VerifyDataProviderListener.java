@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.testng.Assert;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -26,7 +27,9 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     IDataProviderMethod before = DataProviderInfoProvider.before;
     IDataProviderMethod after = DataProviderInfoProvider.after;
     Assert.assertEquals(before, after);
-    Assert.assertEquals(before.getInstance(), after.getInstance());
+    Assert.assertEquals(
+        ((IInstanceInfo<?>) before.getInstance()).getInstance(),
+        ((IInstanceInfo<?>) after.getInstance()).getInstance());
     Assert.assertEquals(before.getMethod().getName(), "getData");
   }
 
@@ -37,7 +40,7 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     IDataProviderMethod before = DataProviderInfoProvider.before;
     IDataProviderMethod after = DataProviderInfoProvider.after;
     Assert.assertEquals(before, after);
-    Assert.assertNull(before.getInstance());
+    Assert.assertNull(((IInstanceInfo<?>) before.getInstance()).getInstance());
     Assert.assertEquals(before.getMethod().getName(), "getStaticData");
   }
 

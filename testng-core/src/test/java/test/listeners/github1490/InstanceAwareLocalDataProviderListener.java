@@ -2,6 +2,7 @@ package test.listeners.github1490;
 
 import java.util.Set;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Sets;
@@ -19,8 +20,9 @@ public class InstanceAwareLocalDataProviderListener extends LocalDataProviderLis
   public void beforeDataProviderExecution(
       IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     super.beforeDataProviderExecution(dataProviderMethod, method, iTestContext);
-    if (dataProviderMethod.getInstance() != null) {
-      instanceCollectionBeforeExecution.add(dataProviderMethod.getInstance());
+    if (((IInstanceInfo<?>) dataProviderMethod.getInstance()).getInstance() != null) {
+      instanceCollectionBeforeExecution.add(
+          ((IInstanceInfo<?>) dataProviderMethod.getInstance()).getInstance());
     }
   }
 
@@ -28,8 +30,9 @@ public class InstanceAwareLocalDataProviderListener extends LocalDataProviderLis
   public void afterDataProviderExecution(
       IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     super.afterDataProviderExecution(dataProviderMethod, method, iTestContext);
-    if (dataProviderMethod.getInstance() != null) {
-      instanceCollectionAfterExecution.add(dataProviderMethod.getInstance());
+    if (((IInstanceInfo<?>) dataProviderMethod.getInstance()).getInstance() != null) {
+      instanceCollectionAfterExecution.add(
+          ((IInstanceInfo<?>) dataProviderMethod.getInstance()).getInstance());
     }
   }
 }

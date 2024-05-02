@@ -1,18 +1,17 @@
 package test.thread.issue188;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class IssueTest extends SimpleBaseTest {
 
