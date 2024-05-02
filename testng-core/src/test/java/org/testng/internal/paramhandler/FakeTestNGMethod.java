@@ -12,6 +12,7 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.InstanceInfo;
 import org.testng.internal.MethodInstanceTest;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
@@ -60,7 +61,7 @@ public class FakeTestNGMethod implements ITestNGMethod {
 
   @Override
   public IInstanceInfo<?> getInstance() {
-    return null;
+    return InstanceInfo.NULL_INSTANCE;
   }
 
   @Override

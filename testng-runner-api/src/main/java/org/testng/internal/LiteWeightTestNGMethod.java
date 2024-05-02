@@ -120,8 +120,8 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     dataProviderMethod =
         new IDataProviderMethod() {
           @Override
-          public Object getInstance() {
-            return dp.getInstance();
+          public IInstanceInfo<?> getInstance() {
+            return (IInstanceInfo<?>) dp.getInstance();
           }
 
           @Override

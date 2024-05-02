@@ -21,9 +21,8 @@ class DataProviderMethod implements IDataProviderMethod {
   }
 
   @Override
-  public Object getInstance() {
-    // TODO return instance
-    return instance.getInstance();
+  public IInstanceInfo<?> getInstance() {
+    return instance;
   }
 
   @Override

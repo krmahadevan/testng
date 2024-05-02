@@ -10,6 +10,7 @@ import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryDataProvider;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -628,15 +629,16 @@ public class Parameters {
       if (!proceed) {
         continue;
       }
+      boolean isStatic = (m.getModifiers() & Modifier.STATIC) != 0;
       Object instanceToUse = instance;
-      if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
+      if (shouldBeStatic && !isStatic) {
         IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
         BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
         CreationAttributes attributes = new CreationAttributes(context, basic, null);
         instanceToUse = dispenser.dispense(attributes);
       }
       // Not a static method but no instance exists, then create new one if possible
-      if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
+      if (!isStatic && instanceToUse == null) {
         try {
           instanceToUse = objectFactory.newInstance(cls);
         } catch (TestNGException ignored) {
@@ -648,9 +650,17 @@ public class Parameters {
       }
 
       if (isDynamicDataProvider) {
-        result = new DataProviderMethodRemovable(new InstanceInfo<>(instanceToUse), m, dp);
+        if (isStatic) {
+          result = new DataProviderMethodRemovable(InstanceInfo.NULL_INSTANCE, m, dp);
+        } else {
+          result = new DataProviderMethodRemovable(new InstanceInfo<>(instanceToUse), m, dp);
+        }
       } else {
-        result = new DataProviderMethod(new InstanceInfo<>(instanceToUse), m, dp);
+        if (isStatic) {
+          result = new DataProviderMethod(InstanceInfo.NULL_INSTANCE, m, dp);
+        } else {
+          result = new DataProviderMethod(new InstanceInfo<>(instanceToUse), m, dp);
+        }
       }
     }
 
@@ -807,7 +817,7 @@ public class Parameters {
         try {
           initParams =
               MethodInvocationHelper.invokeDataProvider(
-                  dataProviderMethod
+                  ((IInstanceInfo<?>) dataProviderMethod.getInstance())
                       .getInstance(), /* a test instance or null if the data provider is static*/
                   dataProviderMethod.getMethod(),
                   testMethod,

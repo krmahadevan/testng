@@ -41,6 +41,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.InstanceInfo;
 import org.testng.internal.collections.Pair;
 
 /** This class implements IAnnotationFinder with JDK5 annotations */
@@ -80,7 +81,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     // because inheritance of this annotation causes aggregation instead of
     // overriding
     if (a.equals(org.testng.annotations.Listeners.class)) {
-
       return AnnotationHelper.getAnnotationFromClass(cls, a);
     } else {
       while (cls != null) {
@@ -131,7 +131,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass = m.getDeclaringClass();
-    if (tm.getInstance() != null) {
+    if (tm.getInstance() != InstanceInfo.NULL_INSTANCE) {
       testClass = ((IInstanceInfo<?>) tm.getInstance()).getInstanceClass();
     }
     Annotation annotation = AnnotationHelper.getAnnotationFromMethod(m, a);

@@ -166,7 +166,8 @@ public class TestNGClassFinder extends BaseClassFinder {
   private ClassInfoMap processFactory(IClass ic, ConstructorOrMethod factoryMethod) {
     IInstanceInfo<?>[] theseInstances = IObject.objects(ic, false);
 
-    IInstanceInfo<?> instance = theseInstances.length != 0 ? theseInstances[0] : null;
+    IInstanceInfo<?> instance =
+        theseInstances.length != 0 ? theseInstances[0] : InstanceInfo.NULL_INSTANCE;
     FactoryMethod fm =
         new FactoryMethod(
             factoryMethod, instance, annotationFinder, m_testContext, objectFactory, holder);

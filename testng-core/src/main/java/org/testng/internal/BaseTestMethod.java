@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -99,7 +100,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_method = com;
     m_methodName = methodName;
     m_annotationFinder = annotationFinder;
-    m_instance = instance;
+    m_instance = Objects.requireNonNull(instance);
   }
 
   /** {@inheritDoc} */
