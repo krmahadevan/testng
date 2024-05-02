@@ -127,7 +127,7 @@ public class DependencyMap {
     if (RuntimeBehavior.enforceThreadAffinity()
         && baseClassMethod instanceof ITestClassInstance
         && derivedClassMethod instanceof ITestClassInstance) {
-      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass())
+      return baseInstance.getInstanceClass().isAssignableFrom(derivedInstance.getInstanceClass())
           && hasSameParameters(
               (ITestClassInstance<?>) baseClassMethod, (ITestClassInstance<?>) derivedClassMethod);
     }
