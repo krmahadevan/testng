@@ -124,8 +124,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
-      UUID key =
-          Objects.requireNonNull(((IInstanceInfo<?>) testMethodInstance.getInstance()).getUid());
+      UUID key = Objects.requireNonNull(testMethodInstance.getInstanceInfo().getUid());
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -134,7 +133,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, (IInstanceInfo<?>) testMethodInstance.getInstance());
+        invokeTestMethods(testMethod, testMethodInstance.getInstanceInfo());
       } finally {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -171,7 +170,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         m_classMethodMap.getInvokedBeforeClassMethods();
     Set<IInstanceInfo<?>> instances =
         invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newConcurrentHashSet());
-    IInstanceInfo<?> instance = (IInstanceInfo<?>) mi.getInstance();
+    IInstanceInfo<?> instance = mi.getInstanceInfo();
     if (!instances.contains(instance)) {
       instances.add(instance);
       List<IClassListener> original =
@@ -205,8 +204,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     List<IInstanceInfo<?>> invokeInstances = Lists.newArrayList();
     ITestNGMethod tm = mi.getMethod();
-    boolean removalSuccessful =
-        m_classMethodMap.removeAndCheckIfLast(tm, (IInstanceInfo<?>) mi.getInstance());
+    boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstanceInfo());
     if (!removalSuccessful) {
       return;
     }
@@ -214,7 +212,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         m_classMethodMap.getInvokedAfterClassMethods();
     Set<IInstanceInfo<?>> instances =
         invokedAfterClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
-    IInstanceInfo<?> inst = (IInstanceInfo<?>) mi.getInstance();
+    IInstanceInfo<?> inst = mi.getInstanceInfo();
     if (!instances.contains(inst)) {
       invokeInstances.add(inst);
     }

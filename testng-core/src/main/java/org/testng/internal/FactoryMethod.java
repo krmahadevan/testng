@@ -121,7 +121,7 @@ public class FactoryMethod extends BaseTestMethod {
 
     factoryAnnotation = annotationFinder.findAnnotation(com, IFactoryAnnotation.class);
 
-    m_instance = getInstance();
+    m_instance = getInstanceInfo();
     m_testContext = testContext;
     NoOpTestClass tc = new NoOpTestClass();
     tc.setTestClass(declaringClass);

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
-import org.testng.IInstanceInfo;
 import org.testng.ITest;
 import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
@@ -104,7 +103,7 @@ public class TestResult implements ITestResult {
     }
     m_context = ctx;
 
-    Object instance = ((IInstanceInfo<?>) method.getInstance()).getInstance();
+    Object instance = method.getInstanceInfo().getInstance();
 
     // Calculate the name: either the method name, ITest#getTestName or
     // toString() if it's been overridden.
@@ -158,7 +157,7 @@ public class TestResult implements ITestResult {
     if (this.m_method == null) {
       return null;
     }
-    Object instance = ((IInstanceInfo<?>) this.m_method.getInstance()).getInstance();
+    Object instance = this.m_method.getInstanceInfo().getInstance();
     if (instance instanceof ITest) {
       return ((ITest) instance).getTestName();
     }
@@ -300,15 +299,17 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object getInstance() {
-    return ((IInstanceInfo<?>) this.m_method.getInstance()).getInstance();
+    return this.m_method.getInstanceInfo().getInstance();
   }
 
   @Override
   public Object[] getFactoryParameters() {
-    if (!(this.m_method.getInstance() instanceof ITestClassInstance)) {
+    if (!(this.m_method.getInstanceInfo() instanceof ITestClassInstance)) {
       return new Object[0];
     }
-    return ((ITestClassInstance<?>) this.m_method.getInstance()).getFactoryMethod().getParameters();
+    return ((ITestClassInstance<?>) this.m_method.getInstanceInfo())
+        .getFactoryMethod()
+        .getParameters();
   }
 
   @Override

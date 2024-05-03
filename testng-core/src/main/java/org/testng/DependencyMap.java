@@ -103,8 +103,8 @@ public class DependencyMap {
 
   private static boolean hasInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    IInstanceInfo<?> baseInstance = (IInstanceInfo<?>) baseClassMethod.getInstance();
-    IInstanceInfo<?> derivedInstance = (IInstanceInfo<?>) derivedClassMethod.getInstance();
+    IInstanceInfo<?> baseInstance = baseClassMethod.getInstanceInfo();
+    IInstanceInfo<?> derivedInstance = derivedClassMethod.getInstanceInfo();
     boolean result = derivedInstance != null || baseInstance != null;
     if (RuntimeBehavior.enforceThreadAffinity()
         && result
@@ -118,8 +118,8 @@ public class DependencyMap {
 
   private static boolean isSameInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    IInstanceInfo<?> baseInstance = (IInstanceInfo<?>) baseClassMethod.getInstance();
-    IInstanceInfo<?> derivedInstance = (IInstanceInfo<?>) derivedClassMethod.getInstance();
+    IInstanceInfo<?> baseInstance = baseClassMethod.getInstanceInfo();
+    IInstanceInfo<?> derivedInstance = derivedClassMethod.getInstanceInfo();
     boolean nonNullInstances = derivedInstance != null && baseInstance != null;
     if (!nonNullInstances) {
       return false;

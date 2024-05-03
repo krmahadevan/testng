@@ -23,15 +23,15 @@ public class MethodInstance implements IMethodInstance {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
-    return (IInstanceInfo<?>) m_method.getInstance();
+  public IInstanceInfo<?> getInstanceInfo() {
+    return m_method.getInstanceInfo();
   }
 
   @Override
   public String toString() {
     return Objects.toStringHelper(getClass())
         .add("method", m_method)
-        .add("instance", getInstance())
+        .add("instance", getInstanceInfo())
         .toString();
   }
 

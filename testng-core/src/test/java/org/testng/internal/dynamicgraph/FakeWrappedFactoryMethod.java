@@ -15,7 +15,7 @@ public class FakeWrappedFactoryMethod extends WrappedTestNGMethod {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
+  public IInstanceInfo<?> getInstanceInfo() {
     return instance;
   }
 }

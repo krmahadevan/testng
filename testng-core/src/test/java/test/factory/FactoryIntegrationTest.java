@@ -88,8 +88,8 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
         new ITestListener() {
           @Override
           public void onTestSuccess(ITestResult result) {
-            if (result.getMethod().getInstance() instanceof ITestClassInstance<?>) {
-              params.add(((ITestClassInstance<?>) result.getMethod().getInstance()));
+            if (result.getMethod().getInstanceInfo() instanceof ITestClassInstance<?>) {
+              params.add(((ITestClassInstance<?>) result.getMethod().getInstanceInfo()));
             }
           }
         });

@@ -57,8 +57,8 @@ public class VerifyInterceptor implements IMethodInterceptor {
               }
 
               @Override
-              public IInstanceInfo<?> getInstance() {
-                return (IInstanceInfo<?>) tm.getInstance();
+              public IInstanceInfo<?> getInstanceInfo() {
+                return tm.getInstanceInfo();
               }
             });
       }

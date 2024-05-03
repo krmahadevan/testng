@@ -360,11 +360,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (failuresPresentInUpstreamDependency(testMethod, methods)) {
         String methodsInfo =
             Arrays.stream(methods)
-                .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstance())
+                .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstanceInfo())
                 .collect(Collectors.joining("\n"));
         return String.format(
             "Method %s() on instance %s depends on not successfully finished methods \n[%s]",
-            testMethod.getQualifiedName(), testMethod.getInstance().toString(), methodsInfo);
+            testMethod.getQualifiedName(), testMethod.getInstanceInfo().toString(), methodsInfo);
       }
     }
 
@@ -459,18 +459,17 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             r -> {
               Object instance =
                   Optional.ofNullable(r.getInstance())
-                      .orElse(((IInstanceInfo<?>) r.getMethod().getInstance()).getInstance());
+                      .orElse(r.getMethod().getInstanceInfo().getInstance());
               if (method.getGroupsDependedUpon().length == 0) {
                 // Consider equality of objects alone if we are NOT dealing with group dependency.
-                return instance == ((IInstanceInfo<?>) method.getInstance()).getInstance();
+                return instance == method.getInstanceInfo().getInstance();
               }
               // Keep this instance if
               // 1) It's on a different class or
               // 2) It's on the same class and on the same instance
               boolean unEqualTestClasses =
                   !r.getTestClass().getRealClass().equals(method.getTestClass().getRealClass());
-              boolean sameInstance =
-                  instance == ((IInstanceInfo<?>) method.getInstance()).getInstance();
+              boolean sameInstance = instance == method.getInstanceInfo().getInstance();
               return sameInstance || unEqualTestClasses;
             })
         .collect(Collectors.toSet());
@@ -764,9 +763,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           && (arguments.getParameterValues().length > 0
               || testResult.getFactoryParameters().length > 0)) {
         int parametersIndex = arguments.getParametersIndex();
-        if (testResult.getMethod().getInstance() instanceof ITestClassInstance) {
+        if (testResult.getMethod().getInstanceInfo() instanceof ITestClassInstance) {
           parametersIndex =
-              ((ITestClassInstance<?>) testResult.getMethod().getInstance()).getIndex();
+              ((ITestClassInstance<?>) testResult.getMethod().getInstanceInfo()).getIndex();
         }
         arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
       }

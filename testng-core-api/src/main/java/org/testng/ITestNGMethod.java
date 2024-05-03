@@ -38,8 +38,12 @@ public interface ITestNGMethod extends Cloneable {
    */
   String getMethodName();
 
-  // TODO deprecate return IInstanceInfo<?>
-  Object getInstance();
+  @Deprecated
+  default Object getInstance() {
+    return getInstanceInfo().getInstance();
+  }
+
+  IInstanceInfo<?> getInstanceInfo();
 
   /**
    * Needed for serialization.

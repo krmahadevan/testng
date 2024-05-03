@@ -3,10 +3,10 @@ package test.listeners.github1490;
 import java.util.List;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
-import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.internal.InstanceInfo;
 
 public class LocalDataProviderListener implements IDataProviderListener {
   public static final List<String> messages = Lists.newArrayList();
@@ -24,10 +24,10 @@ public class LocalDataProviderListener implements IDataProviderListener {
   }
 
   private static void log(ITestNGMethod method, String prefix) {
-    if (method.getInstance() != null) {
+    if (method.getInstanceInfo() != InstanceInfo.NULL_INSTANCE) {
       messages.add(
           prefix
-              + ((IInstanceInfo<?>) method.getInstance()).getInstanceClass().getName()
+              + method.getInstanceInfo().getInstanceClass().getName()
               + "."
               + method.getMethodName());
     } else {

@@ -59,7 +59,7 @@ public class SampleTestCase {
 
   private static void record() {
     ITestResult itr = Reporter.getCurrentTestResult();
-    IInstanceInfo<?> instance = (IInstanceInfo<?>) itr.getMethod().getInstance();
+    IInstanceInfo<?> instance = itr.getMethod().getInstanceInfo();
     objectMap.computeIfAbsent(instance.getUid(), k -> ConcurrentHashMap.newKeySet()).add(instance);
   }
 }

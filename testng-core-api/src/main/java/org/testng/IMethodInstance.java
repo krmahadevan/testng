@@ -5,6 +5,10 @@ public interface IMethodInstance {
 
   ITestNGMethod getMethod();
 
-  // TODO deprecate return IInstanceInfo<?>
-  Object getInstance();
+  @Deprecated
+  default Object getInstance() {
+    return getInstanceInfo().getInstance();
+  }
+
+  IInstanceInfo<?> getInstanceInfo();
 }

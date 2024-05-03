@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import org.testng.IClass;
-import org.testng.IInstanceInfo;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
@@ -108,7 +107,7 @@ class TestNgMethodUtils {
     }
     Object tmObject =
         Optional.ofNullable(tm)
-            .map(iTestNGMethod -> ((IInstanceInfo<?>) iTestNGMethod.getInstance()).getInstance())
+            .map(iTestNGMethod -> iTestNGMethod.getInstanceInfo().getInstance())
             .orElse(null);
     return instance.equals(tmObject);
   }

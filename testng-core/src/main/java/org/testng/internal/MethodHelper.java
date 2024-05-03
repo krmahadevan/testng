@@ -340,10 +340,9 @@ public class MethodHelper {
       if (methodsDependedUpon.length > 0) {
         ITestNGMethod[] methodsNamed;
         // Method has instance
-        if (m.getInstance() != null) {
+        if (m.getInstanceInfo() != InstanceInfo.NULL_INSTANCE) {
           // Get other methods with the same instance
-          List<ITestNGMethod> instanceMethods =
-              testInstances.get((IInstanceInfo<?>) m.getInstance());
+          List<ITestNGMethod> instanceMethods = testInstances.get(m.getInstanceInfo());
           try {
             // Search for other methods that depends upon with the same instance
             methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
@@ -419,11 +418,8 @@ public class MethodHelper {
       ITestNGMethod[] methods) {
     return Arrays.stream(methods)
         .parallel()
-        .filter(m -> Objects.nonNull(m.getInstance()))
-        .collect(
-            Collectors.groupingBy(
-                (ITestNGMethod iTestNGMethod) -> (IInstanceInfo<?>) iTestNGMethod.getInstance(),
-                Collectors.toList()));
+        .filter(m -> Objects.nonNull(m.getInstanceInfo()))
+        .collect(Collectors.groupingBy(ITestNGMethod::getInstanceInfo, Collectors.toList()));
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {

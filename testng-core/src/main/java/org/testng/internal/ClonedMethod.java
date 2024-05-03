@@ -95,8 +95,8 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
-    return (IInstanceInfo<?>) m_method.getInstance();
+  public IInstanceInfo<?> getInstanceInfo() {
+    return m_method.getInstanceInfo();
   }
 
   @Override

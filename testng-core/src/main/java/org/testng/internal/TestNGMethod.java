@@ -74,8 +74,9 @@ public class TestNGMethod extends BaseTestMethod {
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
     String className = m_method.getDeclaringClass().getName();
-    if (getInstance() != null && getInstance().getInstanceClass() != null) {
-      className = getInstance().getInstanceClass().getName();
+    if (getInstanceInfo() != InstanceInfo.NULL_INSTANCE
+        && getInstanceInfo().getInstanceClass() != null) {
+      className = getInstanceInfo().getInstanceClass().getName();
     }
     setInvocationNumbers(xmlTest.getInvocationNumbers(className + "." + m_method.getName()));
 
@@ -171,7 +172,7 @@ public class TestNGMethod extends BaseTestMethod {
             getAnnotationFinder(),
             false,
             getXmlTest(),
-            getInstance());
+            getInstanceInfo());
     ITestClass tc = getTestClass();
     NoOpTestClass testClass = new NoOpTestClass(tc);
     testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));

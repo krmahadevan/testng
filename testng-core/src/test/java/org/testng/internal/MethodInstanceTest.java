@@ -275,8 +275,8 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public Object getInstance() {
-      return null;
+    public IInstanceInfo<?> getInstanceInfo() {
+      return InstanceInfo.NULL_INSTANCE;
     }
 
     @Override

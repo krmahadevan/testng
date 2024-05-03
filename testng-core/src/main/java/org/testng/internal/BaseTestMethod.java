@@ -150,7 +150,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
+  public IInstanceInfo<?> getInstanceInfo() {
     return m_instance;
   }
 
@@ -369,7 +369,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
             ? other.m_testClass == null
             : other.m_testClass != null
                 && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                && getInstance().equals(other.getInstance());
+                && getInstanceInfo().equals(other.getInstanceInfo());
 
     return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
@@ -382,8 +382,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   @Override
   public int hashCode() {
     int hash = m_method.hashCode();
-    if (getInstance() != null) {
-      hash = hash * 31 + getInstance().hashCode();
+    if (getInstanceInfo().getInstance() != null) {
+      hash = hash * 31 + getInstanceInfo().getInstance().hashCode();
     }
     return hash;
   }
@@ -391,10 +391,10 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-    IInstanceInfo<?> object = getInstance();
+    IInstanceInfo<?> instance = getInstanceInfo();
     Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
-    if (object != null) {
-      clazz = object.getInstanceClass();
+    if (instance != InstanceInfo.NULL_INSTANCE) {
+      clazz = instance.getInstanceClass();
     }
     ITestOrConfiguration classAnnotation =
         getAnnotationFinder().findAnnotation(clazz, annotationClass);
@@ -498,7 +498,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
         .append("[pri:")
         .append(getPriority())
         .append(", instance:")
-        .append(getInstance())
+        .append(getInstanceInfo())
         .append(customAttributes())
         .append("]");
 

@@ -14,9 +14,11 @@ public class MyMethodListener implements IConfigurationListener {
   @Override
   public void onConfigurationSuccess(ITestResult tr) {
     Object[] values = new Object[0];
-    if (tr.getMethod().getInstance() instanceof ITestClassInstance) {
+    if (tr.getMethod().getInstanceInfo() instanceof ITestClassInstance) {
       values =
-          ((ITestClassInstance<?>) tr.getMethod().getInstance()).getFactoryMethod().getParameters();
+          ((ITestClassInstance<?>) tr.getMethod().getInstanceInfo())
+              .getFactoryMethod()
+              .getParameters();
     }
     if (tr.getMethod().isBeforeSuiteConfiguration()) {
       contents.put(BeforeSuite.class, values);

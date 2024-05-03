@@ -10,7 +10,6 @@ import org.assertj.core.api.Condition;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
 import org.testng.IDataProviderMethod;
-import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -563,12 +562,11 @@ public class DataProviderTest extends SimpleBaseTest {
     IDataProviderMethod dpm = method.getDataProviderMethod();
     assertThat(dpm).isNotNull();
     if (performInstanceCheck) {
-      assertThat(((IInstanceInfo<?>) dpm.getInstance()).getInstance())
-          .isEqualTo(((IInstanceInfo<?>) method.getInstance()).getInstance());
+      assertThat(dpm.getInstanceInfo().getInstance())
+          .isEqualTo(method.getInstanceInfo().getInstance());
     }
     assertThat(dpm.getMethod().getName()).isEqualTo("getData");
-    assertThat(((IInstanceInfo<?>) dpm.getInstance()).getInstance().getClass())
-        .isEqualTo(dataProviderClass);
+    assertThat(dpm.getInstanceInfo().getInstanceClass()).isEqualTo(dataProviderClass);
   }
 
   @DataProvider(name = "testData")

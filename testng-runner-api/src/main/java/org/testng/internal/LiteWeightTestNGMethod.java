@@ -72,7 +72,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     realClass = iTestNGMethod.getRealClass();
     testClass = iTestNGMethod.getTestClass();
     methodName = iTestNGMethod.getMethodName();
-    instance = (IInstanceInfo<?>) iTestNGMethod.getInstance();
+    instance = iTestNGMethod.getInstanceInfo();
     instanceHashCodes = iTestNGMethod.getInstanceHashCodes();
     groups = iTestNGMethod.getGroups();
     groupsDependedUpon = iTestNGMethod.getGroupsDependedUpon();
@@ -120,8 +120,8 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     dataProviderMethod =
         new IDataProviderMethod() {
           @Override
-          public IInstanceInfo<?> getInstance() {
-            return (IInstanceInfo<?>) dp.getInstance();
+          public IInstanceInfo<?> getInstanceInfo() {
+            return dp.getInstanceInfo();
           }
 
           @Override
@@ -183,7 +183,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
+  public IInstanceInfo<?> getInstanceInfo() {
     return instance;
   }
 

@@ -21,7 +21,7 @@ class DataProviderMethod implements IDataProviderMethod {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
+  public IInstanceInfo<?> getInstanceInfo() {
     return instance;
   }
 

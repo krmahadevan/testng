@@ -10,7 +10,6 @@ import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
-import org.testng.IInstanceInfo;
 import org.testng.IRetryDataProvider;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -817,7 +816,8 @@ public class Parameters {
         try {
           initParams =
               MethodInvocationHelper.invokeDataProvider(
-                  ((IInstanceInfo<?>) dataProviderMethod.getInstance())
+                  dataProviderMethod
+                      .getInstanceInfo()
                       .getInstance(), /* a test instance or null if the data provider is static*/
                   dataProviderMethod.getMethod(),
                   testMethod,

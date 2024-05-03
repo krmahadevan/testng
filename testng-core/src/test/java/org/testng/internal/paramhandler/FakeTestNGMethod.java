@@ -60,7 +60,7 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
+  public IInstanceInfo<?> getInstanceInfo() {
     return InstanceInfo.NULL_INSTANCE;
   }
 

@@ -184,7 +184,7 @@ public final class DynamicGraphHelper {
       ITestNGMethod[] methods) {
     ListMultiMap<IInstanceInfo<?>, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : methods) {
-      instanceMap.put((IInstanceInfo<?>) m.getInstance(), m);
+      instanceMap.put(m.getInstanceInfo(), m);
     }
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();

@@ -191,11 +191,8 @@ public class FailedReporter implements IReporter {
         .filter(
             method ->
                 context.getPassedTests().getAllMethods().stream()
-                    .map(
-                        iTestNGMethod ->
-                            ((IInstanceInfo<?>) iTestNGMethod.getInstance()).getInstance())
-                    .noneMatch(
-                        i -> i.equals(((IInstanceInfo<?>) method.getInstance()).getInstance())))
+                    .map(iTestNGMethod -> iTestNGMethod.getInstanceInfo().getInstance())
+                    .noneMatch(i -> i.equals(method.getInstanceInfo().getInstance())))
         .filter(
             method ->
                 Arrays.stream(m.getGroups())
@@ -228,7 +225,7 @@ public class FailedReporter implements IReporter {
     Map<Class<?>, Set<ITestNGMethod>> methodsMap = Maps.newHashMap();
 
     for (ITestNGMethod m : methods) {
-      IInstanceInfo<?> instance = (IInstanceInfo<?>) m.getInstance();
+      IInstanceInfo<?> instance = m.getInstanceInfo();
       Class<?> clazz = instance == null ? m.getRealClass() : instance.getInstanceClass();
       Set<ITestNGMethod> methodList = methodsMap.computeIfAbsent(clazz, k -> Sets.newHashSet());
       methodList.add(m);

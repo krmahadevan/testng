@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
-import org.testng.IInstanceInfo;
 import org.testng.ITestClassInstance;
 import org.testng.ITestNGMethod;
 
@@ -43,8 +42,8 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
     }
 
     private int objectEquality(ITestNGMethod a, ITestNGMethod b) {
-      UUID one = ((IInstanceInfo<?>) a.getInstance()).getUid();
-      UUID two = ((IInstanceInfo<?>) b.getInstance()).getUid();
+      UUID one = a.getInstanceInfo().getUid();
+      UUID two = b.getInstanceInfo().getUid();
       return one.compareTo(two);
     }
 

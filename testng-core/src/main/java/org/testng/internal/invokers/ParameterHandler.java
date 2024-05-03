@@ -51,7 +51,7 @@ class ParameterHandler {
       Object fedInstance) {
     return handleParameters(
         testMethod,
-        ((IInstanceInfo<?>) testMethod.getInstance()).getInstance(),
+        testMethod.getInstanceInfo().getInstance(),
         allParameterNames,
         parameters,
         testContext,

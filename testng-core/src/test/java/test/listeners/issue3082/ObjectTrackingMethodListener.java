@@ -10,7 +10,7 @@ public class ObjectTrackingMethodListener implements IInvokedMethodListener {
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
     String methodName = method.getTestMethod().getMethodName();
-    IInstanceInfo<?> instance = (IInstanceInfo<?>) method.getTestMethod().getInstance();
+    IInstanceInfo<?> instance = method.getTestMethod().getInstanceInfo();
     if (instance.getInstance() instanceof IUniqueObject) {
       ObjectRepository.add(((IUniqueObject) instance.getInstance()).id(), methodName);
     }

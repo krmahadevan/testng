@@ -46,8 +46,8 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public IInstanceInfo<?> getInstance() {
-    return (IInstanceInfo<?>) testNGMethod.getInstance();
+  public IInstanceInfo<?> getInstanceInfo() {
+    return testNGMethod.getInstanceInfo();
   }
 
   @Override

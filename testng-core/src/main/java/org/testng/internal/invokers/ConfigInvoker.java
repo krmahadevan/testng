@@ -251,7 +251,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       IConfigurationAnnotation configurationAnnotation = null;
       try {
         Object inst = arguments.getInstance();
-        IInstanceInfo<?> info = (IInstanceInfo<?>) tm.getInstance();
+        IInstanceInfo<?> info = tm.getInstanceInfo();
         if (info != null && info.getInstance() != null) {
           inst = info.getInstance();
         }

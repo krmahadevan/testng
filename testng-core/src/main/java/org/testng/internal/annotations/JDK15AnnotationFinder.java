@@ -131,8 +131,8 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass = m.getDeclaringClass();
-    if (tm.getInstance() != InstanceInfo.NULL_INSTANCE) {
-      testClass = ((IInstanceInfo<?>) tm.getInstance()).getInstanceClass();
+    if (tm.getInstanceInfo() != InstanceInfo.NULL_INSTANCE) {
+      testClass = tm.getInstanceInfo().getInstanceClass();
     }
     Annotation annotation = AnnotationHelper.getAnnotationFromMethod(m, a);
     if (annotation == null) {
