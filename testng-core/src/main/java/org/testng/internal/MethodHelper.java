@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -324,7 +323,7 @@ public class MethodHelper {
     // Create the graph
     //
 
-    Map<IInstanceInfo<?>, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
+    Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
 
     XmlTest xmlTest = null;
 
@@ -342,7 +341,7 @@ public class MethodHelper {
         // Method has instance
         if (m.getInstanceInfo() != InstanceInfo.NULL_INSTANCE) {
           // Get other methods with the same instance
-          List<ITestNGMethod> instanceMethods = testInstances.get(m.getInstanceInfo());
+          List<ITestNGMethod> instanceMethods = testInstances.get(m.getInstanceInfo().getInstance());
           try {
             // Search for other methods that depends upon with the same instance
             methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
@@ -414,12 +413,12 @@ public class MethodHelper {
    * @param methods Methods to be sorted
    * @return Map of Instances as the keys and the methods associated with the instance as the values
    */
-  private static Map<IInstanceInfo<?>, List<ITestNGMethod>> sortMethodsByInstance(
+  private static Map<Object, List<ITestNGMethod>> sortMethodsByInstance(
       ITestNGMethod[] methods) {
     return Arrays.stream(methods)
         .parallel()
-        .filter(m -> Objects.nonNull(m.getInstanceInfo()))
-        .collect(Collectors.groupingBy(ITestNGMethod::getInstanceInfo, Collectors.toList()));
+        .filter(m -> Objects.nonNull(m.getInstanceInfo().getInstance()))
+        .collect(Collectors.groupingBy(it -> it.getInstanceInfo().getInstance(), Collectors.toList()));
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {

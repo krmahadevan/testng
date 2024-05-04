@@ -96,7 +96,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   public List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
-      IInstanceInfo<?> instance,
+      Object instance,
       ITestContext context) {
     // Potential bug here if the test method was declared on a parent class
     if (testMethod.getTestClass() == null) {
@@ -167,7 +167,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           new Builder()
               .forTestMethod(testMethod)
               .withGroupConfigMethods(groupMethods)
-              .forInstance(instance.getInstance())
+              .forInstance(instance)
               .withParameters(parameters)
               .build();
       this.invoker.invokeAfterGroupsConfigurations(args);
@@ -192,7 +192,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
     TestMethodArguments arguments =
         new TestMethodArguments.Builder()
-            .usingInstance(instance.getInstance())
+            .usingInstance(instance)
             .forTestMethod(testMethod)
             .withParameters(parameters)
             .forTestClass(testClass)

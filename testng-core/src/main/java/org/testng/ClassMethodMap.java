@@ -16,11 +16,11 @@ import org.testng.internal.XmlMethodSelector;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
-  private final Map<IInstanceInfo<?>, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
+  private final Map<Object, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked
-  private final Map<ITestClass, Set<IInstanceInfo<?>>> beforeClassMethods = Maps.newConcurrentMap();
-  private final Map<ITestClass, Set<IInstanceInfo<?>>> afterClassMethods = Maps.newConcurrentMap();
+  private final Map<ITestClass, Set<Object>> beforeClassMethods = Maps.newConcurrentMap();
+  private final Map<ITestClass, Set<Object>> afterClassMethods = Maps.newConcurrentMap();
 
   public ClassMethodMap(List<ITestNGMethod> methods, XmlMethodSelector xmlMethodSelector) {
     for (ITestNGMethod m : methods) {
@@ -31,7 +31,7 @@ public class ClassMethodMap {
         continue;
       }
 
-      IInstanceInfo<?> instance = m.getInstanceInfo();
+      Object instance = m.getInstanceInfo().getInstance();
       classMap.computeIfAbsent(instance, k -> new ConcurrentLinkedQueue<>()).add(m);
     }
   }
@@ -43,7 +43,7 @@ public class ClassMethodMap {
    * @param instance The test instance
    * @return true if it is the last of its class
    */
-  public boolean removeAndCheckIfLast(ITestNGMethod m, IInstanceInfo<?> instance) {
+  public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
     Collection<ITestNGMethod> l = classMap.get(instance);
     if (l == null) {
       throw new IllegalStateException(
@@ -60,19 +60,19 @@ public class ClassMethodMap {
     return true;
   }
 
-  public Map<ITestClass, Set<IInstanceInfo<?>>> getInvokedBeforeClassMethods() {
+  public Map<ITestClass, Set<Object>> getInvokedBeforeClassMethods() {
     return beforeClassMethods;
   }
 
-  public Map<ITestClass, Set<IInstanceInfo<?>>> getInvokedAfterClassMethods() {
+  public Map<ITestClass, Set<Object>> getInvokedAfterClassMethods() {
     return afterClassMethods;
   }
 
   public void clear() {
-    for (Set<IInstanceInfo<?>> instances : beforeClassMethods.values()) {
+    for (Set<Object> instances : beforeClassMethods.values()) {
       instances.clear();
     }
-    for (Set<IInstanceInfo<?>> instances : afterClassMethods.values()) {
+    for (Set<Object> instances : afterClassMethods.values()) {
       instances.clear();
     }
     beforeClassMethods.clear();

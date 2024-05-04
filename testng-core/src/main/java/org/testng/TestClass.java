@@ -29,10 +29,10 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private final ITestObjectFactory objectFactory;
   private final String m_errorMsgPrefix;
 
-  private final IdentityHashMap<IInstanceInfo<?>, List<ITestNGMethod>> beforeClassConfig =
+  private final IdentityHashMap<Object, List<ITestNGMethod>> beforeClassConfig =
       new IdentityHashMap<>();
 
-  private final IdentityHashMap<IInstanceInfo<?>, List<ITestNGMethod>> afterClassConfig =
+  private final IdentityHashMap<Object, List<ITestNGMethod>> afterClassConfig =
       new IdentityHashMap<>();
 
   @Override
@@ -46,7 +46,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   private static List<ITestNGMethod> getAllClassLevelConfigs(
-      IdentityHashMap<IInstanceInfo<?>, List<ITestNGMethod>> map) {
+      IdentityHashMap<Object, List<ITestNGMethod>> map) {
     return map.values()
         .parallelStream()
         .reduce(
@@ -59,12 +59,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceBeforeClassMethods(IInstanceInfo<?> instance) {
+  public List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
     return beforeClassConfig.get(instance);
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceAfterClassMethods(IInstanceInfo<?> instance) {
+  public List<ITestNGMethod> getInstanceAfterClassMethods(Object instance) {
     return afterClassConfig.get(instance);
   }
 
@@ -207,7 +207,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               true,
               xmlTest,
               instance);
-      beforeClassConfig.put(instance, m_beforeClassMethods);
+      beforeClassConfig.put(instance.getInstance(), m_beforeClassMethods);
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
@@ -216,7 +216,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               false,
               xmlTest,
               instance);
-      afterClassConfig.put(instance, m_afterClassMethods);
+      afterClassConfig.put(instance.getInstance(), m_afterClassMethods);
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,

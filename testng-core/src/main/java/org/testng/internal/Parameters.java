@@ -628,16 +628,16 @@ public class Parameters {
       if (!proceed) {
         continue;
       }
-      boolean isStatic = (m.getModifiers() & Modifier.STATIC) != 0;
+      boolean isStatic = (m.getModifiers() & Modifier.STATIC) == 0;
       Object instanceToUse = instance;
-      if (shouldBeStatic && !isStatic) {
+      if (shouldBeStatic && isStatic) {
         IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
         BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
         CreationAttributes attributes = new CreationAttributes(context, basic, null);
         instanceToUse = dispenser.dispense(attributes);
       }
       // Not a static method but no instance exists, then create new one if possible
-      if (!isStatic && instanceToUse == null) {
+      if (isStatic && instanceToUse == null) {
         try {
           instanceToUse = objectFactory.newInstance(cls);
         } catch (TestNGException ignored) {
@@ -649,17 +649,17 @@ public class Parameters {
       }
 
       if (isDynamicDataProvider) {
-        if (isStatic) {
-          result = new DataProviderMethodRemovable(InstanceInfo.NULL_INSTANCE, m, dp);
-        } else {
-          result = new DataProviderMethodRemovable(new InstanceInfo<>(instanceToUse), m, dp);
+        InstanceInfo info = InstanceInfo.NULL_INSTANCE;
+        if (instanceToUse != null) {
+          info = new InstanceInfo<>(instanceToUse);
         }
+        result = new DataProviderMethodRemovable(info, m, dp);
       } else {
-        if (isStatic) {
-          result = new DataProviderMethod(InstanceInfo.NULL_INSTANCE, m, dp);
-        } else {
-          result = new DataProviderMethod(new InstanceInfo<>(instanceToUse), m, dp);
+        InstanceInfo info = InstanceInfo.NULL_INSTANCE;
+        if (instanceToUse != null) {
+          info = new InstanceInfo<>(instanceToUse);
         }
+        result = new DataProviderMethod(info, m, dp);
       }
     }
 

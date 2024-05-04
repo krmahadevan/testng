@@ -103,33 +103,33 @@ public class DependencyMap {
 
   private static boolean hasInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    IInstanceInfo<?> baseInstance = baseClassMethod.getInstanceInfo();
-    IInstanceInfo<?> derivedInstance = derivedClassMethod.getInstanceInfo();
-    boolean result = derivedInstance != null || baseInstance != null;
-    if (RuntimeBehavior.enforceThreadAffinity()
-        && result
-        && baseClassMethod instanceof ITestClassInstance
-        && derivedClassMethod instanceof ITestClassInstance) {
+    Object baseInstance = baseClassMethod.getInstanceInfo().getInstance();
+    Object derivedInstance = derivedClassMethod.getInstanceInfo().getInstance();
+    boolean result = baseInstance != null || derivedInstance != null;
+    boolean params = baseClassMethod.getInstanceInfo() instanceof ITestClassInstance
+        && derivedClassMethod.getInstanceInfo() instanceof ITestClassInstance;
+    if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
       return hasSameParameters(
-          (ITestClassInstance<?>) baseClassMethod, (ITestClassInstance<?>) derivedClassMethod);
+          (ITestClassInstance<?>) baseClassMethod.getInstanceInfo(),
+          (ITestClassInstance<?>) derivedClassMethod.getInstanceInfo());
     }
     return result;
   }
 
   private static boolean isSameInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    IInstanceInfo<?> baseInstance = baseClassMethod.getInstanceInfo();
-    IInstanceInfo<?> derivedInstance = derivedClassMethod.getInstanceInfo();
+    Object baseInstance = baseClassMethod.getInstanceInfo().getInstance();
+    Object derivedInstance = derivedClassMethod.getInstanceInfo().getInstance();
     boolean nonNullInstances = derivedInstance != null && baseInstance != null;
     if (!nonNullInstances) {
       return false;
     }
     if (RuntimeBehavior.enforceThreadAffinity()
-        && baseClassMethod instanceof ITestClassInstance
-        && derivedClassMethod instanceof ITestClassInstance) {
-      return baseInstance.getInstanceClass().isAssignableFrom(derivedInstance.getInstanceClass())
+        && baseClassMethod.getInstanceInfo() instanceof ITestClassInstance) {
+      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass())
           && hasSameParameters(
-              (ITestClassInstance<?>) baseClassMethod, (ITestClassInstance<?>) derivedClassMethod);
+              (ITestClassInstance<?>) baseClassMethod.getInstanceInfo(),
+          (ITestClassInstance<?>) derivedClassMethod.getInstanceInfo());
     }
     return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
   }
@@ -138,9 +138,6 @@ public class DependencyMap {
       ITestClassInstance<?> baseClassMethod, ITestClassInstance<?> derivedClassMethod) {
     Object[] firstParams = baseClassMethod.getFactoryMethod().getParameters();
     Object[] secondParams = derivedClassMethod.getFactoryMethod().getParameters();
-    if (firstParams.length == 0 || secondParams.length == 0) {
-      return false;
-    }
     return firstParams[0].equals(secondParams[0]);
   }
 

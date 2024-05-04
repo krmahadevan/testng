@@ -42,4 +42,17 @@ public class InstanceInfo<T> implements IInstanceInfo<T> {
   public Class<T> getInstanceClass() {
     return m_instanceClass;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    InstanceInfo<?> that = (InstanceInfo<?>) o;
+    return Objects.equals(uuid, that.uuid);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(uuid);
+  }
 }

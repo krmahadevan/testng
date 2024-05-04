@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.testng.IInstanceInfo;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -225,8 +224,8 @@ public class FailedReporter implements IReporter {
     Map<Class<?>, Set<ITestNGMethod>> methodsMap = Maps.newHashMap();
 
     for (ITestNGMethod m : methods) {
-      IInstanceInfo<?> instance = m.getInstanceInfo();
-      Class<?> clazz = instance == null ? m.getRealClass() : instance.getInstanceClass();
+      Object instance = m.getInstanceInfo().getInstance();
+      Class<?> clazz = instance == null ? m.getRealClass() : instance.getClass();
       Set<ITestNGMethod> methodList = methodsMap.computeIfAbsent(clazz, k -> Sets.newHashSet());
       methodList.add(m);
     }

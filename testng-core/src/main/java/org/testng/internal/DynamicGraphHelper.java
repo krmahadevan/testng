@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.testng.DependencyMap;
-import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 import org.testng.TestRunner;
 import org.testng.collections.ListMultiMap;
@@ -182,19 +181,19 @@ public final class DynamicGraphHelper {
 
   private static ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(
       ITestNGMethod[] methods) {
-    ListMultiMap<IInstanceInfo<?>, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
+    ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : methods) {
-      instanceMap.put(m.getInstanceInfo(), m);
+      instanceMap.put(m.getInstanceInfo().getInstance(), m);
     }
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
-    IInstanceInfo<?> previousInstance = null;
-    for (Map.Entry<IInstanceInfo<?>, List<ITestNGMethod>> es : instanceMap.entrySet()) {
+    Object previousInstance = null;
+    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.entrySet()) {
       if (previousInstance == null) {
         previousInstance = es.getKey();
       } else {
         List<ITestNGMethod> previousMethods = instanceMap.get(previousInstance);
-        IInstanceInfo<?> currentInstance = es.getKey();
+        Object currentInstance = es.getKey();
         List<ITestNGMethod> currentMethods = instanceMap.get(currentInstance);
         // Make all the methods from the current instance depend on the methods of
         // the previous instance

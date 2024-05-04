@@ -50,9 +50,6 @@ public class GroupConfigMethodArguments extends Arguments {
     }
 
     public Builder forInstance(Object instance) {
-      if (instance instanceof IInstanceInfo) {
-        throw new IllegalArgumentException();
-      }
       this.instance = instance;
       return this;
     }

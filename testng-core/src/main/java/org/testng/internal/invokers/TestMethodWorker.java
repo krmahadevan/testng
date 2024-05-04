@@ -12,7 +12,6 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
-import org.testng.IInstanceInfo;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -133,7 +132,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMethodInstance.getInstanceInfo());
+        invokeTestMethods(testMethod, testMethodInstance.getInstanceInfo().getInstance());
       } finally {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -146,7 +145,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return threadIdToRunOn != -1;
   }
 
-  protected void invokeTestMethods(ITestNGMethod tm, IInstanceInfo<?> instance) {
+  protected void invokeTestMethods(ITestNGMethod tm, Object instance) {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
     // several times and these methods are run in parallel, the results
@@ -166,11 +165,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   /** Invoke the @BeforeClass methods if not done already */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    Map<ITestClass, Set<IInstanceInfo<?>>> invokedBeforeClassMethods =
+    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
-    Set<IInstanceInfo<?>> instances =
+    Set<Object> instances =
         invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newConcurrentHashSet());
-    IInstanceInfo<?> instance = mi.getInstanceInfo();
+    Object instance = mi.getInstanceInfo().getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);
       List<IClassListener> original =
@@ -185,7 +184,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
                   ((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance))
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
-              .usingInstance(instance.getInstance())
+              .usingInstance(instance)
               .build();
       m_configInvoker.invokeConfigurations(attributes);
     }
@@ -202,17 +201,17 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     // Invoke after class methods if this test method is the last one
     //
-    List<IInstanceInfo<?>> invokeInstances = Lists.newArrayList();
+    List<Object> invokeInstances = Lists.newArrayList();
     ITestNGMethod tm = mi.getMethod();
-    boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstanceInfo());
+    boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstanceInfo().getInstance());
     if (!removalSuccessful) {
       return;
     }
-    Map<ITestClass, Set<IInstanceInfo<?>>> invokedAfterClassMethods =
+    Map<ITestClass, Set<Object>> invokedAfterClassMethods =
         m_classMethodMap.getInvokedAfterClassMethods();
-    Set<IInstanceInfo<?>> instances =
+    Set<Object> instances =
         invokedAfterClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
-    IInstanceInfo<?> inst = mi.getInstanceInfo();
+    Object inst = mi.getInstanceInfo().getInstance();
     if (!instances.contains(inst)) {
       invokeInstances.add(inst);
     }
@@ -227,14 +226,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   private void invokeAfterClassConfigurations(
-      ITestClass testClass, List<IInstanceInfo<?>> invokeInstances) {
-    for (IInstanceInfo<?> invokeInstance : invokeInstances) {
+      ITestClass testClass, List<Object> invokeInstances) {
+    for (Object invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes =
           new Builder()
               .forTestClass(testClass)
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
-              .usingInstance(invokeInstance.getInstance())
+              .usingInstance(invokeInstance)
               .usingConfigMethodsAs(
                   ((ITestClassConfigInfo) testClass).getInstanceAfterClassMethods(invokeInstance))
               .build();

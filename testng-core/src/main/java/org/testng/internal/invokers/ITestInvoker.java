@@ -3,7 +3,6 @@ package org.testng.internal.invokers;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.IInstanceInfo;
 import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -25,7 +24,7 @@ public interface ITestInvoker {
   List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
-      IInstanceInfo<?> instance,
+      Object instance,
       ITestContext context);
 
   ITestResult invokeTestMethod(

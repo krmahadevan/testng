@@ -81,7 +81,7 @@ public class FactoryMethod extends BaseTestMethod {
       DataProviderHolder holder) {
     super(objectFactory, com.getName(), com, annotationFinder, iinstance);
     this.holder = holder;
-    Object instance = iinstance == null ? null : iinstance.getInstance();
+    Object instance = iinstance.getInstance();
     init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
@@ -165,7 +165,7 @@ public class FactoryMethod extends BaseTestMethod {
                 m_objectFactory,
                 this,
                 allParameterNames,
-                m_instance,
+                m_instance.getInstance(),
                 methodParameters,
                 m_testContext.getCurrentXmlTest().getSuite(),
                 m_annotationFinder,

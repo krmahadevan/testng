@@ -18,7 +18,6 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
-import org.testng.internal.InstanceInfo;
 import org.testng.internal.ObjectBag;
 import org.testng.internal.Parameters;
 import org.testng.internal.invokers.ITestInvoker.FailureContext;
@@ -130,7 +129,7 @@ public class MethodRunner implements IMethodRunner {
               arguments.getTestMethod(),
               parametersIndex,
               parameterValues,
-              new InstanceInfo<>(arguments.getInstance()),
+              arguments.getInstance(),
               arguments.getParameters(),
               arguments.getTestClass(),
               arguments.getBeforeMethods(),
