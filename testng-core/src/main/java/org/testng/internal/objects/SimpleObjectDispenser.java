@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import org.testng.IClass;
+import org.testng.IInstanceInfo;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
@@ -188,7 +189,7 @@ class SimpleObjectDispenser implements IObjectDispenser {
     if (enclosingIClass == null) {
       return factory.newInstance(ec);
     }
-    IObject.IdentifiableObject[] enclosingInstances = IObject.objects(enclosingIClass, false);
+    IInstanceInfo<?>[] enclosingInstances = IObject.objects(enclosingIClass, false);
     if (enclosingInstances.length == 0) {
       return factory.newInstance(ec.getConstructor(ec));
     }

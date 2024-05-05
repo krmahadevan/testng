@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.InstanceInfo;
 import org.testng.internal.MethodInstanceTest;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
@@ -58,8 +60,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object getInstance() {
-    return null;
+  public IInstanceInfo<?> getInstanceInfo() {
+    return InstanceInfo.NULL_INSTANCE;
   }
 
   @Override

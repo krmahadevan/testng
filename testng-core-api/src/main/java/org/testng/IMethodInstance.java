@@ -5,5 +5,10 @@ public interface IMethodInstance {
 
   ITestNGMethod getMethod();
 
-  Object getInstance();
+  @Deprecated
+  default Object getInstance() {
+    return getInstanceInfo().getInstance();
+  }
+
+  IInstanceInfo<?> getInstanceInfo();
 }

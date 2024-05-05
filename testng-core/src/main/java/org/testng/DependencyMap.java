@@ -103,47 +103,42 @@ public class DependencyMap {
 
   private static boolean hasInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Object baseInstance = baseClassMethod.getInstance();
-    Object derivedInstance = derivedClassMethod.getInstance();
-    boolean result = derivedInstance != null || baseInstance != null;
-    boolean params =
-        baseClassMethod.getFactoryMethod().flatMap(IFactoryMethod::getParameters).isPresent();
-
+    Object baseInstance = baseClassMethod.getInstanceInfo().getInstance();
+    Object derivedInstance = derivedClassMethod.getInstanceInfo().getInstance();
+    boolean result = baseInstance != null || derivedInstance != null;
+    boolean params = baseClassMethod.getInstanceInfo() instanceof ITestClassInstance
+        && derivedClassMethod.getInstanceInfo() instanceof ITestClassInstance;
     if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
-      return hasSameParameters(baseClassMethod, derivedClassMethod);
+      return hasSameParameters(
+          (ITestClassInstance<?>) baseClassMethod.getInstanceInfo(),
+          (ITestClassInstance<?>) derivedClassMethod.getInstanceInfo());
     }
     return result;
   }
 
-  private static boolean hasSameParameters(
-      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Optional<IFactoryMethod> first = baseClassMethod.getFactoryMethod();
-    Optional<IFactoryMethod> second = derivedClassMethod.getFactoryMethod();
-    if (first.isPresent() && second.isPresent()) {
-      Optional<Object[]> firstParams = first.get().getParameters();
-      Optional<Object[]> secondParams = second.get().getParameters();
-      if (firstParams.isPresent() && secondParams.isPresent()) {
-        return firstParams.get()[0].equals(secondParams.get()[0]);
-      }
-      return false;
-    }
-    return false;
-  }
-
   private static boolean isSameInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Object baseInstance = baseClassMethod.getInstance();
-    Object derivedInstance = derivedClassMethod.getInstance();
+    Object baseInstance = baseClassMethod.getInstanceInfo().getInstance();
+    Object derivedInstance = derivedClassMethod.getInstanceInfo().getInstance();
     boolean nonNullInstances = derivedInstance != null && baseInstance != null;
     if (!nonNullInstances) {
       return false;
     }
-    if (null != baseClassMethod.getFactoryMethodParamsInfo()
-        && RuntimeBehavior.enforceThreadAffinity()) {
+    if (RuntimeBehavior.enforceThreadAffinity()
+        && baseClassMethod.getInstanceInfo() instanceof ITestClassInstance) {
       return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass())
-          && hasSameParameters(baseClassMethod, derivedClassMethod);
+          && hasSameParameters(
+              (ITestClassInstance<?>) baseClassMethod.getInstanceInfo(),
+          (ITestClassInstance<?>) derivedClassMethod.getInstanceInfo());
     }
     return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
+  }
+
+  private static boolean hasSameParameters(
+      ITestClassInstance<?> baseClassMethod, ITestClassInstance<?> derivedClassMethod) {
+    Object[] firstParams = baseClassMethod.getFactoryMethod().getParameters();
+    Object[] secondParams = derivedClassMethod.getFactoryMethod().getParameters();
+    return firstParams[0].equals(secondParams[0]);
   }
 
   private static String constructMethodNameUsingTestClass(

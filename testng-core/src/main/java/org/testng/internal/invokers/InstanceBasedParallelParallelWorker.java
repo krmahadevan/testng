@@ -15,7 +15,7 @@ class InstanceBasedParallelParallelWorker extends AbstractParallelWorker {
   public List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments) {
     ListMultiMap<Object, ITestNGMethod> lmm = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : arguments.getMethods()) {
-      lmm.put(m.getInstance(), m);
+      lmm.put(m.getInstanceInfo().getInstance(), m);
     }
     List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
     IInvoker invoker = arguments.getInvoker();

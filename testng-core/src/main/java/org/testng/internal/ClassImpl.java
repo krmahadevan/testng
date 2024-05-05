@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.testng.IClass;
+import org.testng.IInstanceInfo;
 import org.testng.ITest;
 import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
@@ -25,12 +26,12 @@ import org.testng.xml.XmlTest;
 public class ClassImpl implements IClass, IObject {
 
   private final Class<?> m_class;
-  private IObject.IdentifiableObject m_defaultInstance = null;
+  private IInstanceInfo<?> m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
-  private final List<IObject.IdentifiableObject> identifiableObjects = Lists.newArrayList();
+  private final List<IInstanceInfo<?>> identifiableObjects = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
   private long[] m_instanceHashCodes;
-  private final IObject.IdentifiableObject m_instance;
+  private final IInstanceInfo<?> m_instance;
   private final ITestObjectFactory m_objectFactory;
   private String m_testName = null;
   private final XmlClass m_xmlClass;
@@ -40,7 +41,7 @@ public class ClassImpl implements IClass, IObject {
       ITestContext context,
       Class<?> cls,
       XmlClass xmlClass,
-      IObject.IdentifiableObject instance,
+      IInstanceInfo<?> instance,
       Map<Class<?>, IClass> classes,
       IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
@@ -51,7 +52,7 @@ public class ClassImpl implements IClass, IObject {
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_objectFactory = objectFactory;
-    if (IObject.IdentifiableObject.unwrap(instance) instanceof ITest) {
+    if (instance != null && instance.getInstance() instanceof ITest) {
       m_testName = ((ITest) instance.getInstance()).getTestName();
     }
     if (m_testName == null) {
@@ -92,7 +93,7 @@ public class ClassImpl implements IClass, IObject {
     return m_xmlClass;
   }
 
-  private IObject.IdentifiableObject getDefaultInstance(boolean create, String errMsgPrefix) {
+  private IInstanceInfo<?> getDefaultInstance(boolean create, String errMsgPrefix) {
     if (m_defaultInstance == null) {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
@@ -107,7 +108,7 @@ public class ClassImpl implements IClass, IObject {
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
         Object raw = dispenser.dispense(attributes);
         if (raw != null) {
-          m_defaultInstance = new IObject.IdentifiableObject(raw);
+          m_defaultInstance = new InstanceInfo<>(raw);
         }
       }
     }
@@ -122,26 +123,25 @@ public class ClassImpl implements IClass, IObject {
   @Override
   public Object[] getInstances(boolean create, String errorMsgPrefix) {
     return Arrays.stream(getObjects(create, errorMsgPrefix))
-        .map(IdentifiableObject::getInstance)
+        .map(IInstanceInfo::getInstance)
         .toArray(Object[]::new);
   }
 
   @Override
-  public void addObject(IdentifiableObject instance) {
+  public void addObject(IInstanceInfo<?> instance) {
     identifiableObjects.add(instance);
   }
 
   @Override
-  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
-    IdentifiableObject[] result = {};
-
-    if (!identifiableObjects.isEmpty()) {
-      result = identifiableObjects.toArray(new IdentifiableObject[0]);
-    } else {
-      IdentifiableObject defaultInstance = getDefaultInstance(create, errorMsgPrefix);
+  public IInstanceInfo<?>[] getObjects(boolean create, String errorMsgPrefix) {
+    IInstanceInfo<?>[] result = {};
+    if (identifiableObjects.isEmpty()) {
+      IInstanceInfo<?> defaultInstance = getDefaultInstance(create, errorMsgPrefix);
       if (defaultInstance != null) {
-        result = new IdentifiableObject[] {defaultInstance};
+        result = new IInstanceInfo<?>[] {defaultInstance};
       }
+    } else {
+      result = identifiableObjects.toArray(new IInstanceInfo<?>[0]);
     }
 
     int m_instanceCount = identifiableObjects.size();
@@ -159,7 +159,7 @@ public class ClassImpl implements IClass, IObject {
 
   @Override
   public void addInstance(Object instance) {
-    addObject(new IdentifiableObject(instance));
+    addObject(new InstanceInfo<>(instance));
   }
 
   private static int computeHashCode(Object instance) {

@@ -105,7 +105,7 @@ public class TestNgRunStateListener implements ISuiteListener, ITestListener {
     return (buildEventLog(result.getTestContext(), event))
         .addData(METHOD_NAME, result.getMethod().getMethodName())
         .addData(CLASS_NAME, result.getMethod().getRealClass().getCanonicalName())
-        .addData(CLASS_INSTANCE, result.getMethod().getInstance())
+        .addData(CLASS_INSTANCE, result.getMethod().getInstanceInfo().getInstance())
         .addData(GROUPS_DEPENDED_ON, result.getMethod().getGroupsDependedUpon())
         .addData(METHODS_DEPENDED_ON, result.getMethod().getMethodsDependedUpon())
         .addData(GROUPS_BELONGING_TO, result.getMethod().getGroups());

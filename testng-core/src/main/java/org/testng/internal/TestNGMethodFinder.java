@@ -266,7 +266,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
               beforeGroups,
               afterGroups,
               this.runInfo.getXmlTest(),
-              null);
+              InstanceInfo.NULL_INSTANCE);
       results.add(confMethod);
     }
   }

@@ -69,11 +69,13 @@ public class ParallelByInstancesInterceptorTest {
   }
 
   private static boolean isHighPriority(IMethodInstance instance) {
-    return instance.getInstance().getClass().getAnnotation(TestNG1396HighPriority.class) != null;
+    return instance.getInstanceInfo().getInstanceClass().getAnnotation(TestNG1396HighPriority.class)
+        != null;
   }
 
   private static boolean isHighPriority(ITestNGMethod method) {
-    return method.getInstance().getClass().getAnnotation(TestNG1396HighPriority.class) != null;
+    return method.getInstanceInfo().getInstanceClass().getAnnotation(TestNG1396HighPriority.class)
+        != null;
   }
 
   public class ReverseOrderTestInterceptor implements IMethodInterceptor {

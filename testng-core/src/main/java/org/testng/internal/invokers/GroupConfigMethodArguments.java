@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.xml.XmlSuite;

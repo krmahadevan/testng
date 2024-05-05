@@ -1,14 +1,36 @@
 package org.testng.internal;
 
+import java.util.Objects;
+import java.util.UUID;
 import org.testng.IInstanceInfo;
 
 public class InstanceInfo<T> implements IInstanceInfo<T> {
+  // NULL_INSTANCE is only used by static data providers
+  public static final InstanceInfo<?> NULL_INSTANCE = new InstanceInfo<>();
+
+  private final UUID uuid;
   private final Class<T> m_instanceClass;
   private final T m_instance;
 
+  private InstanceInfo() {
+    uuid = UUID.randomUUID();
+    m_instanceClass = null;
+    m_instance = null;
+  }
+
+  public InstanceInfo(T instance) {
+    this((Class<T>) instance.getClass(), instance);
+  }
+
   public InstanceInfo(Class<T> cls, T instance) {
-    m_instanceClass = cls;
-    m_instance = instance;
+    uuid = UUID.randomUUID();
+    m_instanceClass = Objects.requireNonNull(cls);
+    m_instance = Objects.requireNonNull(instance);
+  }
+
+  @Override
+  public UUID getUid() {
+    return uuid;
   }
 
   @Override
@@ -19,5 +41,18 @@ public class InstanceInfo<T> implements IInstanceInfo<T> {
   @Override
   public Class<T> getInstanceClass() {
     return m_instanceClass;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    InstanceInfo<?> that = (InstanceInfo<?>) o;
+    return Objects.equals(uuid, that.uuid);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(uuid);
   }
 }

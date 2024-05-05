@@ -26,7 +26,8 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     IDataProviderMethod before = DataProviderInfoProvider.before;
     IDataProviderMethod after = DataProviderInfoProvider.after;
     Assert.assertEquals(before, after);
-    Assert.assertEquals(before.getInstance(), after.getInstance());
+    Assert.assertEquals(
+        before.getInstanceInfo().getInstance(), after.getInstanceInfo().getInstance());
     Assert.assertEquals(before.getMethod().getName(), "getData");
   }
 
@@ -37,7 +38,7 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     IDataProviderMethod before = DataProviderInfoProvider.before;
     IDataProviderMethod after = DataProviderInfoProvider.after;
     Assert.assertEquals(before, after);
-    Assert.assertNull(before.getInstance());
+    Assert.assertNull(before.getInstanceInfo().getInstance());
     Assert.assertEquals(before.getMethod().getName(), "getStaticData");
   }
 

@@ -3,24 +3,25 @@ package org.testng.internal;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryDataProvider;
 import org.testng.annotations.IDataProviderAnnotation;
 
 /** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
 class DataProviderMethod implements IDataProviderMethod {
 
-  protected Object instance;
+  protected IInstanceInfo<?> instance;
   protected Method method;
   private final IDataProviderAnnotation annotation;
 
-  DataProviderMethod(Object instance, Method method, IDataProviderAnnotation annotation) {
+  DataProviderMethod(IInstanceInfo<?> instance, Method method, IDataProviderAnnotation annotation) {
     this.instance = instance;
     this.method = method;
     this.annotation = annotation;
   }
 
   @Override
-  public Object getInstance() {
+  public IInstanceInfo<?> getInstanceInfo() {
     return instance;
   }
 

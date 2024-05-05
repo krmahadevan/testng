@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderMethod;
+import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -50,7 +51,7 @@ class ParameterHandler {
       Object fedInstance) {
     return handleParameters(
         testMethod,
-        testMethod.getInstance(),
+        testMethod.getInstanceInfo().getInstance(),
         allParameterNames,
         parameters,
         testContext,
@@ -64,6 +65,9 @@ class ParameterHandler {
       Map<String, String> parameters,
       ITestContext testContext,
       Object fedInstance) {
+    if (instance instanceof IInstanceInfo) {
+      throw new IllegalArgumentException("Expected an instance, but got an IInstanceInfo.");
+    }
     XmlSuite suite = testContext.getCurrentXmlTest().getSuite();
     try {
       MethodParameters methodParams =

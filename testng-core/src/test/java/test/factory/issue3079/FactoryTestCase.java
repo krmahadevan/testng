@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
-import org.testng.ITestNGMethod;
+import org.testng.IInstanceInfo;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
@@ -15,11 +15,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.internal.IInstanceIdentity;
 
 public class FactoryTestCase {
 
-  public static Map<UUID, Set<Object>> objectMap = new ConcurrentHashMap<>();
+  public static Map<UUID, Set<IInstanceInfo<?>>> objectMap = new ConcurrentHashMap<>();
 
   @Factory(dataProvider = "dp")
   public FactoryTestCase(int ignored) {}
@@ -59,10 +58,7 @@ public class FactoryTestCase {
 
   private static void record() {
     ITestResult itr = Reporter.getCurrentTestResult();
-    ITestNGMethod itm = itr.getMethod();
-    objectMap
-        .computeIfAbsent(
-            (UUID) IInstanceIdentity.getInstanceId(itm), k -> ConcurrentHashMap.newKeySet())
-        .add(itm.getInstance());
+    IInstanceInfo<?> instance = itr.getMethod().getInstanceInfo();
+    objectMap.computeIfAbsent(instance.getUid(), k -> ConcurrentHashMap.newKeySet()).add(instance);
   }
 }

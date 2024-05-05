@@ -15,6 +15,7 @@ import org.testng.SampleIModule;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import org.testng.internal.ClassImpl;
+import org.testng.internal.InstanceInfo;
 import org.testng.internal.paramhandler.FakeTestContext;
 import test.guice.FakeInjector;
 
@@ -61,7 +62,7 @@ public final class GuiceHelperTest {
           new FakeTestContext(),
           GuiceHelperTest.class,
           null,
-          new IdentifiableObject((ITest) () -> "GITHUB-2273"),
+          new InstanceInfo<>((ITest) () -> "GITHUB-2273"),
           null,
           null,
           new ITestObjectFactory() {});

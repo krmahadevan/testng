@@ -1,21 +1,25 @@
 package org.testng.internal;
 
-public class ParameterInfo implements IParameterInfo {
-  private final Object instance;
+import java.util.Arrays;
+import org.testng.IFactoryMethod;
+import org.testng.ITestClassInstance;
+
+public class ParameterInfo<T> extends InstanceInfo<T>
+    implements ITestClassInstance<T>, IParameterInfo<T> {
   private final int index;
-  private final Object[] parameters;
+  private final IFactoryMethod factoryMethod;
   private final int invocationIndex;
 
-  public ParameterInfo(Object instance, int index, Object[] parameters, int invocationIndex) {
-    this.instance = instance;
+  public ParameterInfo(T instance, int index, IFactoryMethod factoryMethod, int invocationIndex) {
+    super(instance);
     this.index = index;
-    this.parameters = parameters;
+    this.factoryMethod = factoryMethod;
     this.invocationIndex = invocationIndex;
   }
 
   @Override
-  public Object getInstance() {
-    return instance;
+  public Class<T> getInstanceClass() {
+    return (Class<T>) getInstance().getClass();
   }
 
   @Override
@@ -29,7 +33,17 @@ public class ParameterInfo implements IParameterInfo {
   }
 
   @Override
+  public IFactoryMethod getFactoryMethod() {
+    return factoryMethod;
+  }
+
+  @Override
   public Object[] getParameters() {
-    return parameters;
+    return factoryMethod.getParameters();
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + ", instance params:" + Arrays.toString(factoryMethod.getParameters());
   }
 }

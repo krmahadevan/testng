@@ -19,8 +19,8 @@ public class InstanceAwareLocalDataProviderListener extends LocalDataProviderLis
   public void beforeDataProviderExecution(
       IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     super.beforeDataProviderExecution(dataProviderMethod, method, iTestContext);
-    if (dataProviderMethod.getInstance() != null) {
-      instanceCollectionBeforeExecution.add(dataProviderMethod.getInstance());
+    if (dataProviderMethod.getInstanceInfo().getInstance() != null) {
+      instanceCollectionBeforeExecution.add(dataProviderMethod.getInstanceInfo().getInstance());
     }
   }
 
@@ -28,8 +28,8 @@ public class InstanceAwareLocalDataProviderListener extends LocalDataProviderLis
   public void afterDataProviderExecution(
       IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     super.afterDataProviderExecution(dataProviderMethod, method, iTestContext);
-    if (dataProviderMethod.getInstance() != null) {
-      instanceCollectionAfterExecution.add(dataProviderMethod.getInstance());
+    if (dataProviderMethod.getInstanceInfo().getInstance() != null) {
+      instanceCollectionAfterExecution.add(dataProviderMethod.getInstanceInfo().getInstance());
     }
   }
 }

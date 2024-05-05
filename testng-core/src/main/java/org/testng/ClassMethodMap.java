@@ -31,7 +31,7 @@ public class ClassMethodMap {
         continue;
       }
 
-      Object instance = m.getInstance();
+      Object instance = m.getInstanceInfo().getInstance();
       classMap.computeIfAbsent(instance, k -> new ConcurrentLinkedQueue<>()).add(m);
     }
   }

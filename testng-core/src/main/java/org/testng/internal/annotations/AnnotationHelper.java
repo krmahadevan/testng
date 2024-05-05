@@ -19,6 +19,7 @@ import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Maps;
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.InstanceInfo;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.internal.reflect.ReflectionHelper;
@@ -293,7 +294,10 @@ public class AnnotationHelper {
 
             String key = createMethodKey(m);
             vResult.computeIfAbsent(
-                key, k -> new TestNGMethod(objectFactory, m, annotationFinder, xmlTest, null));
+                key,
+                k ->
+                    new TestNGMethod(
+                        objectFactory, m, annotationFinder, xmlTest, InstanceInfo.NULL_INSTANCE));
           }
         } // for
         // Now explore the superclass

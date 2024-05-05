@@ -110,7 +110,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     objects.add(new FactoryTestClassSample("two"));
     for (FactoryTestClassSample object : objects) {
       for (ITestNGMethod method : methods) {
-        methodList.add(new FakeWrappedFactoryMethod(method, object));
+        methodList.add(new FakeWrappedFactoryMethod(method, new InstanceInfo<>(object)));
       }
     }
     ITestNGMethod[] allMethods = methodList.toArray(new ITestNGMethod[0]);
@@ -125,7 +125,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     Set<String> actualObjectIds = Sets.newHashSet();
     List<String> actualMethodNames = Lists.newLinkedList();
     for (ITestNGMethod to : edges.keySet()) {
-      actualObjectIds.add(to.getInstance().toString());
+      actualObjectIds.add(to.getInstanceInfo().getInstance().toString());
       actualMethodNames.add(to.getMethodName());
     }
     assertThat(actualObjectIds).containsExactly("one");
@@ -187,7 +187,11 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     for (Map.Entry<ITestNGMethod, Map<ITestNGMethod, Integer>> edge : graph.getEdges().entrySet()) {
       if (edge.getKey().getMethodName().equals(methodName)
           && (instance == null
-              || edge.getKey().getInstance().toString().equals(instance.toString()))) {
+              || edge.getKey()
+                  .getInstanceInfo()
+                  .getInstance()
+                  .toString()
+                  .equals(instance.toString()))) {
         return edge.getValue();
       }
     }
@@ -233,7 +237,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
                 each.getConstructorOrMethod().getMethod(),
                 finder,
                 xmlTest,
-                new IObject.IdentifiableObject(object));
+                new InstanceInfo<>(object));
         fixedMethods.add(m);
       }
     }

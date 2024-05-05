@@ -6,6 +6,7 @@ import org.testng.IDataProviderMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.internal.InstanceInfo;
 
 public class LocalDataProviderListener implements IDataProviderListener {
   public static final List<String> messages = Lists.newArrayList();
@@ -23,9 +24,12 @@ public class LocalDataProviderListener implements IDataProviderListener {
   }
 
   private static void log(ITestNGMethod method, String prefix) {
-    if (method.getInstance() != null) {
+    if (method.getInstanceInfo() != InstanceInfo.NULL_INSTANCE) {
       messages.add(
-          prefix + method.getInstance().getClass().getName() + "." + method.getMethodName());
+          prefix
+              + method.getInstanceInfo().getInstanceClass().getName()
+              + "."
+              + method.getMethodName());
     } else {
       messages.add(prefix + method.getMethodName());
     }

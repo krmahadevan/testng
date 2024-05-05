@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -94,8 +95,8 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object getInstance() {
-    return m_method.getInstance();
+  public IInstanceInfo<?> getInstanceInfo() {
+    return m_method.getInstanceInfo();
   }
 
   @Override

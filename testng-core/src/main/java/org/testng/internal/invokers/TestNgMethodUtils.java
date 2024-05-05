@@ -105,7 +105,10 @@ class TestNgMethodUtils {
     if (instance == null) {
       return true;
     }
-    Object tmObject = Optional.ofNullable(tm).map(ITestNGMethod::getInstance).orElse(new Object());
+    Object tmObject =
+        Optional.ofNullable(tm)
+            .map(iTestNGMethod -> iTestNGMethod.getInstanceInfo().getInstance())
+            .orElse(null);
     return instance.equals(tmObject);
   }
 

@@ -9,7 +9,12 @@ public interface IDataProviderMethod {
    * @return - The instance to which the data provider belongs to. <code>null</code> if the data
    *     provider is a static one.
    */
-  Object getInstance();
+  @Deprecated
+  default Object getInstance() {
+    return getInstanceInfo().getInstance();
+  }
+
+  IInstanceInfo<?> getInstanceInfo();
 
   /**
    * @return - A {@link Method} object that represents the actual {@literal @}{@link

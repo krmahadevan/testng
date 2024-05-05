@@ -25,12 +25,14 @@ import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
 import org.testng.IHookable;
+import org.testng.IInstanceInfo;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.IRetryAnalyzer;
 import org.testng.ISuite;
 import org.testng.ISuiteRunnerListener;
 import org.testng.ITestClass;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -358,11 +360,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (failuresPresentInUpstreamDependency(testMethod, methods)) {
         String methodsInfo =
             Arrays.stream(methods)
-                .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstance().toString())
+                .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstanceInfo())
                 .collect(Collectors.joining("\n"));
         return String.format(
             "Method %s() on instance %s depends on not successfully finished methods \n[%s]",
-            testMethod.getQualifiedName(), testMethod.getInstance().toString(), methodsInfo);
+            testMethod.getQualifiedName(), testMethod.getInstanceInfo().toString(), methodsInfo);
       }
     }
 
@@ -382,8 +384,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Invoke @BeforeGroups on the original method (reduce thread contention,
     // and also solve thread confinement)
     ITestClass testClass = testMethod.getTestClass();
-    IObject.IdentifiableObject[] instances = IObject.objects(testClass, true);
-    for (IObject.IdentifiableObject instance : instances) {
+    IInstanceInfo<?>[] instances = IObject.objects(testClass, true);
+    for (IInstanceInfo<?> instance : instances) {
       GroupConfigMethodArguments arguments =
           new GroupConfigMethodArguments.Builder()
               .forTestMethod(testMethod)
@@ -409,13 +411,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
             .collect(Collectors.toList());
 
-    for (Object instance : instances) {
+    for (IInstanceInfo<?> instance : instances) {
       GroupConfigMethodArguments arguments =
           new GroupConfigMethodArguments.Builder()
               .forTestMethod(testMethod)
               .withGroupConfigMethods(groupMethods)
               .withParameters(parameters)
-              .forInstance(instance)
+              .forInstance(instance.getInstance())
               .build();
       invoker.invokeAfterGroupsConfigurations(arguments);
     }
@@ -456,17 +458,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         .filter(
             r -> {
               Object instance =
-                  Optional.ofNullable(r.getInstance()).orElse(r.getMethod().getInstance());
+                  Optional.ofNullable(r.getInstance())
+                      .orElse(r.getMethod().getInstanceInfo().getInstance());
               if (method.getGroupsDependedUpon().length == 0) {
                 // Consider equality of objects alone if we are NOT dealing with group dependency.
-                return instance == method.getInstance();
+                return instance == method.getInstanceInfo().getInstance();
               }
               // Keep this instance if
               // 1) It's on a different class or
               // 2) It's on the same class and on the same instance
               boolean unEqualTestClasses =
                   !r.getTestClass().getRealClass().equals(method.getTestClass().getRealClass());
-              boolean sameInstance = instance == method.getInstance();
+              boolean sameInstance = instance == method.getInstanceInfo().getInstance();
               return sameInstance || unEqualTestClasses;
             })
         .collect(Collectors.toSet());
@@ -760,8 +763,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           && (arguments.getParameterValues().length > 0
               || testResult.getFactoryParameters().length > 0)) {
         int parametersIndex = arguments.getParametersIndex();
-        if (null != testResult.getMethod().getFactoryMethodParamsInfo()) {
-          parametersIndex = testResult.getMethod().getFactoryMethodParamsInfo().getIndex();
+        if (testResult.getMethod().getInstanceInfo() instanceof ITestClassInstance) {
+          parametersIndex =
+              ((ITestClassInstance<?>) testResult.getMethod().getInstanceInfo()).getIndex();
         }
         arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
       }

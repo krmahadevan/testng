@@ -1,16 +1,18 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import org.testng.IInstanceInfo;
 import org.testng.annotations.IDataProviderAnnotation;
 
 /** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
 class DataProviderMethodRemovable extends DataProviderMethod {
 
-  DataProviderMethodRemovable(Object instance, Method method, IDataProviderAnnotation annotation) {
+  DataProviderMethodRemovable(
+      IInstanceInfo<?> instance, Method method, IDataProviderAnnotation annotation) {
     super(instance, method, annotation);
   }
 
-  public void setInstance(Object instance) {
+  public void setInstance(IInstanceInfo<?> instance) {
     this.instance = instance;
   }
 

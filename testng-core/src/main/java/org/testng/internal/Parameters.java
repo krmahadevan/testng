@@ -628,15 +628,16 @@ public class Parameters {
       if (!proceed) {
         continue;
       }
+      boolean isStatic = (m.getModifiers() & Modifier.STATIC) == 0;
       Object instanceToUse = instance;
-      if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
+      if (shouldBeStatic && isStatic) {
         IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
         BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
         CreationAttributes attributes = new CreationAttributes(context, basic, null);
         instanceToUse = dispenser.dispense(attributes);
       }
       // Not a static method but no instance exists, then create new one if possible
-      if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
+      if (isStatic && instanceToUse == null) {
         try {
           instanceToUse = objectFactory.newInstance(cls);
         } catch (TestNGException ignored) {
@@ -648,9 +649,17 @@ public class Parameters {
       }
 
       if (isDynamicDataProvider) {
-        result = new DataProviderMethodRemovable(instanceToUse, m, dp);
+        InstanceInfo info = InstanceInfo.NULL_INSTANCE;
+        if (instanceToUse != null) {
+          info = new InstanceInfo<>(instanceToUse);
+        }
+        result = new DataProviderMethodRemovable(info, m, dp);
       } else {
-        result = new DataProviderMethod(instanceToUse, m, dp);
+        InstanceInfo info = InstanceInfo.NULL_INSTANCE;
+        if (instanceToUse != null) {
+          info = new InstanceInfo<>(instanceToUse);
+        }
+        result = new DataProviderMethod(info, m, dp);
       }
     }
 
@@ -808,6 +817,7 @@ public class Parameters {
           initParams =
               MethodInvocationHelper.invokeDataProvider(
                   dataProviderMethod
+                      .getInstanceInfo()
                       .getInstance(), /* a test instance or null if the data provider is static*/
                   dataProviderMethod.getMethod(),
                   testMethod,

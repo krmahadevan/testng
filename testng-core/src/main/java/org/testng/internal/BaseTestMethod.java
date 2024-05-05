@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,10 +17,9 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.IClass;
-import org.testng.IFactoryMethod;
+import org.testng.IInstanceInfo;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
-import org.testng.ITestClassInstance;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
@@ -38,8 +37,7 @@ import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
-public abstract class BaseTestMethod
-    implements ITestNGMethod, IInvocationStatus, IInstanceIdentity {
+public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
@@ -86,7 +84,7 @@ public abstract class BaseTestMethod
   private int m_interceptedPriority;
 
   private XmlTest m_xmlTest;
-  private final IObject.IdentifiableObject m_instance;
+  private final IInstanceInfo<?> m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
   protected final ITestObjectFactory m_objectFactory;
@@ -96,17 +94,13 @@ public abstract class BaseTestMethod
       String methodName,
       ConstructorOrMethod com,
       IAnnotationFinder annotationFinder,
-      IObject.IdentifiableObject instance) {
+      IInstanceInfo<?> instance) {
     m_objectFactory = objectFactory;
     m_methodClass = com.getDeclaringClass();
     m_method = com;
     m_methodName = methodName;
     m_annotationFinder = annotationFinder;
-    m_instance = instance;
-  }
-
-  protected final IObject.IdentifiableObject identifiableObject() {
-    return m_instance;
+    m_instance = Objects.requireNonNull(instance);
   }
 
   /** {@inheritDoc} */
@@ -156,18 +150,8 @@ public abstract class BaseTestMethod
   }
 
   @Override
-  public Object getInstance() {
-    return Optional.ofNullable(m_instance)
-        .map(IObject.IdentifiableObject::getInstance)
-        .map(ITestClassInstance::embeddedInstance)
-        .orElse(null);
-  }
-
-  @Override
-  public UUID getInstanceId() {
-    return Optional.ofNullable(m_instance)
-        .map(IObject.IdentifiableObject::getInstanceId)
-        .orElse(null);
+  public IInstanceInfo<?> getInstanceInfo() {
+    return m_instance;
   }
 
   /** {@inheritDoc} */
@@ -305,19 +289,6 @@ public abstract class BaseTestMethod
     m_timeOut = timeOut;
   }
 
-  @Override
-  public Optional<IFactoryMethod> getFactoryMethod() {
-    IObject.IdentifiableObject identifiable = identifiableObject();
-    if (identifiable == null) {
-      return Optional.empty();
-    }
-    Object instance = identifiableObject().getInstance();
-    if (instance instanceof ParameterInfo) {
-      return Optional.of(() -> Optional.of(((ParameterInfo) instance).getParameters()));
-    }
-    return ITestNGMethod.super.getFactoryMethod();
-  }
-
   /**
    * {@inheritDoc}
    *
@@ -398,7 +369,7 @@ public abstract class BaseTestMethod
             ? other.m_testClass == null
             : other.m_testClass != null
                 && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                && getInstance() == other.getInstance();
+                && getInstanceInfo().equals(other.getInstanceInfo());
 
     return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
@@ -411,8 +382,8 @@ public abstract class BaseTestMethod
   @Override
   public int hashCode() {
     int hash = m_method.hashCode();
-    if (getInstance() != null) {
-      hash = hash * 31 + System.identityHashCode(getInstance());
+    if (getInstanceInfo().getInstance() != null) {
+      hash = hash * 31 + getInstanceInfo().getInstance().hashCode();
     }
     return hash;
   }
@@ -420,10 +391,10 @@ public abstract class BaseTestMethod
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-    Object object = getInstance();
+    IInstanceInfo<?> instance = getInstanceInfo();
     Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
-    if (object != null) {
-      clazz = object.getClass();
+    if (instance != InstanceInfo.NULL_INSTANCE) {
+      clazz = instance.getInstanceClass();
     }
     ITestOrConfiguration classAnnotation =
         getAnnotationFinder().findAnnotation(clazz, annotationClass);
@@ -527,8 +498,7 @@ public abstract class BaseTestMethod
         .append("[pri:")
         .append(getPriority())
         .append(", instance:")
-        .append(getInstance())
-        .append(instanceParameters())
+        .append(getInstanceInfo())
         .append(customAttributes())
         .append("]");
 
@@ -554,13 +524,6 @@ public abstract class BaseTestMethod
 
   public String getSimpleName() {
     return m_method.getDeclaringClass().getSimpleName() + "." + m_method.getName();
-  }
-
-  private String instanceParameters() {
-    return getFactoryMethod()
-        .flatMap(IFactoryMethod::getParameters)
-        .map(it -> ", instance params:" + Arrays.toString(it))
-        .orElse("");
   }
 
   protected String getSignature() {

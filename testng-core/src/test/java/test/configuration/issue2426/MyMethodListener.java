@@ -3,7 +3,7 @@ package test.configuration.issue2426;
 import java.util.HashMap;
 import java.util.Map;
 import org.testng.IConfigurationListener;
-import org.testng.IFactoryMethod;
+import org.testng.ITestClassInstance;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 
@@ -13,11 +13,13 @@ public class MyMethodListener implements IConfigurationListener {
 
   @Override
   public void onConfigurationSuccess(ITestResult tr) {
-    Object[] values =
-        tr.getMethod()
-            .getFactoryMethod()
-            .flatMap(IFactoryMethod::getParameters)
-            .orElse(new Object[0]);
+    Object[] values = new Object[0];
+    if (tr.getMethod().getInstanceInfo() instanceof ITestClassInstance) {
+      values =
+          ((ITestClassInstance<?>) tr.getMethod().getInstanceInfo())
+              .getFactoryMethod()
+              .getParameters();
+    }
     if (tr.getMethod().isBeforeSuiteConfiguration()) {
       contents.put(BeforeSuite.class, values);
     }

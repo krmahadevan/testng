@@ -2,10 +2,9 @@ package org.testng.internal;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.testng.IFactoryMethod;
+import org.testng.ITestClassInstance;
 import org.testng.ITestNGMethod;
 
 public enum MethodSorting implements Comparator<ITestNGMethod> {
@@ -31,23 +30,21 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
               .thenComparing(ITestNGMethod::getMethodName)
               .thenComparing(Object::toString)
               .thenComparing(
-                  method ->
-                      method
-                          .getFactoryMethod()
-                          .flatMap(IFactoryMethod::getParameters)
-                          .map(Arrays::toString)
-                          .orElse(""))
+                  method -> {
+                    if (!(method instanceof ITestClassInstance)) {
+                      return "";
+                    }
+                    return Arrays.toString(
+                        ((ITestClassInstance<?>) method).getFactoryMethod().getParameters());
+                  })
               .thenComparing(this::objectEquality);
       return comparator.compare(o1, o2);
     }
 
     private int objectEquality(ITestNGMethod a, ITestNGMethod b) {
-      Object one = IInstanceIdentity.getInstanceId(a.getInstance());
-      Object two = IInstanceIdentity.getInstanceId(b.getInstance());
-      if (IInstanceIdentity.isIdentityAware(one, two)) {
-        return ((UUID) one).compareTo((UUID) two);
-      }
-      return Integer.compare(Objects.hashCode(one), Objects.hashCode(two));
+      UUID one = a.getInstanceInfo().getUid();
+      UUID two = b.getInstanceInfo().getUid();
+      return one.compareTo(two);
     }
 
     @Override

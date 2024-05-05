@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import org.testng.IInstanceInfo;
 import org.testng.ITestNGMethod;
 
 public class Arguments {
